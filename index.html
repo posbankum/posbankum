@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SI-POSBANKUM V.3.0 - Sistem Informasi Pos Bantuan Hukum Desa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        tala: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            600: '#16a34a',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        gov: {
+                            700: '#0f4c81',
+                            800: '#1e3a8a',
+                            900: '#1e293b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; scroll-behavior: smooth; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; color: black; }
+        }
+        .print-only { display: none; }
+        .sidebar-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-800 bg-slate-50">
+
+    <section id="login-page" class="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-gov-900 to-emerald-900 p-4 sm:p-8 z-50 min-h-screen">
+        <div class="w-full max-w-6xl mx-auto flex items-center justify-between py-4 px-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-white mb-12">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-emerald-700 rounded-xl flex items-center justify-center text-white text-xl shadow">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-base tracking-tight">SI-POSBANKUM V.3.0</h1>
+                    <p class="text-[10px] text-emerald-300">Kabupaten Tanah Laut • Cloud Synchronized</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 text-xs font-semibold">
+                <button type="button" onclick="scrollToSection('alur-pelayanan-section')" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl transition flex items-center gap-2">
+                    <i class="fa-solid fa-route text-emerald-300"></i> Alur Pelayanan
+                </button>
+                <button type="button" onclick="scrollToSection('dasar-hukum-section')" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl transition flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-amber-300"></i> Dasar Hukum
+                </button>
+            </div>
+        </div>
+
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 mx-auto my-6">
+            <div class="p-8 text-center bg-slate-50 border-b border-slate-100">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner text-3xl">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">SI-POSBANKUM</h2>
+                <p class="text-sm text-slate-500 mt-1">Sistem Informasi Pos Bantuan Hukum</p>
+                <p class="text-[11px] font-bold text-emerald-600 mt-1">Kabupaten Tanah Laut • Cloud Google Sheets</p>
+            </div>
+            <div class="p-8 space-y-5">
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Username</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="login-username" required placeholder="superadmin / paralegal_..." class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket"></i> Masuk Aplikasi
+                    </button>
+                </form>
+
+                <div class="pt-2 text-center space-y-2">
+                    <button type="button" onclick="loginAsGuest()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition flex items-center justify-center gap-2 border border-slate-200 shadow-sm">
+                        <i class="fa-solid fa-eye text-teal-700 text-sm"></i> Masuk Sebagai Tamu / Pimpinan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="my-36"></div>
+
+        <div id="alur-pelayanan-section" class="w-full max-w-4xl mx-auto bg-white/95 backdrop-blur-md rounded-3xl shadow-xl p-8 border border-slate-200 scroll-mt-24">
+            <div class="text-center max-w-xl mx-auto mb-8">
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Prosedur Layanan</span>
+                <h3 class="text-2xl font-extrabold text-slate-800 mt-2">Alur Pelayanan Pos Bantuan Hukum Desa</h3>
+                <p class="text-xs text-slate-500 mt-1">Langkah-langkah sistematis mendapatkan bantuan hukum gratis bagi masyarakat Kabupaten Tanah Laut.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-slate-50 border border-slate-200 p-5 rounded-2xl text-center space-y-2.5 shadow-sm">
+                    <div class="w-10 h-10 bg-emerald-700 text-white rounded-xl flex items-center justify-center mx-auto text-base font-bold shadow">1</div>
+                    <h4 class="font-bold text-slate-800 text-xs uppercase">Pengajuan</h4>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">Warga melapor ke Posbankum Desa/Kelurahan membawa identitas & kronologi.</p>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 p-5 rounded-2xl text-center space-y-2.5 shadow-sm">
+                    <div class="w-10 h-10 bg-teal-700 text-white rounded-xl flex items-center justify-center mx-auto text-base font-bold shadow">2</div>
+                    <h4 class="font-bold text-slate-800 text-xs uppercase">Konsultasi</h4>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">Paralegal desa memberikan konsultasi awal & pencatatan perkara.</p>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 p-5 rounded-2xl text-center space-y-2.5 shadow-sm">
+                    <div class="w-10 h-10 bg-gov-700 text-white rounded-xl flex items-center justify-center mx-auto text-base font-bold shadow">3</div>
+                    <h4 class="font-bold text-slate-800 text-xs uppercase">Mediasi</h4>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">Penyelesaian sengketa damai melalui mediasi tingkat desa.</p>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 p-5 rounded-2xl text-center space-y-2.5 shadow-sm">
+                    <div class="w-10 h-10 bg-indigo-700 text-white rounded-xl flex items-center justify-center mx-auto text-base font-bold shadow">4</div>
+                    <h4 class="font-bold text-slate-800 text-xs uppercase">Rujukan</h4>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">Rujukan resmi ke LBH / OBH terakreditasi jika perkara berlanjut.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="my-36"></div>
+
+        <div id="dasar-hukum-section" class="w-full max-w-4xl mx-auto bg-white/95 backdrop-blur-md rounded-3xl shadow-xl p-8 mb-20 border border-slate-200 space-y-6 scroll-mt-24">
+            <div class="text-center max-w-xl mx-auto">
+                <span class="bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Landasan Yuridis</span>
+                <h3 class="text-2xl font-extrabold text-slate-800 mt-2">Dasar Hukum Pos Bantuan Hukum</h3>
+                <p class="text-xs text-slate-500 mt-1">Hirarki peraturan perundang-undangan penyelenggaraan bantuan hukum dari pusat hingga daerah.</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="bg-slate-50 border-l-4 border-amber-500 p-4 rounded-xl shadow-sm space-y-1">
+                    <span class="text-[10px] font-bold text-amber-600 uppercase">1. Konstitusi Negara</span>
+                    <h4 class="font-bold text-slate-900 text-sm">Undang-Undang Dasar Negara Republik Indonesia Tahun 1945</h4>
+                    <p class="text-xs text-slate-600">Pasal 28D ayat (1) menjamin pengakuan, jaminan, perlindungan, dan kepastian hukum yang adil serta perlakuan yang sama di hadapan hukum bagi setiap warga negara.</p>
+                </div>
+
+                <div class="bg-slate-50 border-l-4 border-emerald-500 p-4 rounded-xl shadow-sm space-y-1">
+                    <span class="text-[10px] font-bold text-emerald-600 uppercase">2. Undang-Undang Republik Indonesia</span>
+                    <h4 class="font-bold text-slate-900 text-sm">Undang-Undang Nomor 16 Tahun 2011 tentang Bantuan Hukum</h4>
+                    <p class="text-xs text-slate-600">Menjamin hak bagi penerima bantuan hukum untuk mendapatkan akses keadilan serta kewajiban negara mengalokasikan anggaran bantuan hukum.</p>
+                </div>
+
+                <div class="bg-slate-50 border-l-4 border-teal-500 p-4 rounded-xl shadow-sm space-y-1">
+                    <span class="text-[10px] font-bold text-teal-600 uppercase">3. Undang-Undang Pemerintahan Daerah & Desa</span>
+                    <h4 class="font-bold text-slate-900 text-sm">Undang-Undang Nomor 6 Tahun 2014 tentang Desa</h4>
+                    <p class="text-xs text-slate-600">Mendorong penyelenggaraan pemerintahan desa yang akuntabel, demokratis, dan memberikan perlindungan hukum serta ketenteraman bagi masyarakat desa.</p>
+                </div>
+
+                <div class="bg-slate-50 border-l-4 border-gov-500 p-4 rounded-xl shadow-sm space-y-1">
+                    <span class="text-[10px] font-bold text-gov-700 uppercase">4. Peraturan Menteri / Kebijakan Teknis</span>
+                    <h4 class="font-bold text-slate-900 text-sm">Peraturan Menteri Hukum dan HAM Terkait Paralegal & Posbankum Desa</h4>
+                    <p class="text-xs text-slate-600">Pedoman pelaksanaan pemberian layanan hukum, penguatan kapasitas paralegal, dan pembentukan Pos Bantuan Hukum di tingkat desa dan kelurahan.</p>
+                </div>
+
+                <div class="bg-slate-50 border-l-4 border-indigo-500 p-4 rounded-xl shadow-sm space-y-1">
+                    <span class="text-[10px] font-bold text-indigo-600 uppercase">5. Kebijakan Daerah & DPMD Kabupaten</span>
+                    <h4 class="font-bold text-slate-900 text-sm">Peraturan Daerah & Program Kerja DPMD Kabupaten Tanah Laut</h4>
+                    <p class="text-xs text-slate-600">Implementasi pembentukan dan operasional Posbankum Desa di 11 Kecamatan guna mewujudkan desa sadar hukum dan penyelesaian sengketa restoratif.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center text-emerald-100/70 text-xs flex flex-col gap-1 items-center justify-center pb-6">
+            <p>&copy; 2026 Tim IT DPMD - Dinas Pemberdayaan Masyarakat dan Desa Kabupaten Tanah Laut. Semua Hak Cipta Dilindungi.</p>
+            <p class="text-[11px] text-emerald-200/80"><i class="fa-solid fa-cloud me-1"></i> Cloud Google Sheets Synchronized</p>
+        </div>
+    </section>
+
+    <div id="main-app" class="hidden flex-col min-h-screen w-full">
+        <header class="bg-gradient-to-r from-teal-900 via-emerald-800 to-gov-800 text-white shadow-lg sticky top-0 z-40 no-print">
+            <div class="w-full px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-white rounded-xl shadow-md flex items-center justify-center p-1 overflow-hidden border border-emerald-400/30">
+                            <i class="fa-solid fa-scale-balanced text-2xl text-emerald-700"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h1 class="font-extrabold text-xl sm:text-2xl tracking-tight text-white">SI-POSBANKUM</h1>
+                                <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1"><i class="fa-solid fa-cloud text-xs"></i> Cloud Sheets Sync</span>
+                            </div>
+                            <p class="text-xs text-emerald-100 font-light hidden sm:block">Sistem Informasi Pos Bantuan Hukum Desa • Kabupaten Tanah Laut</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <div id="user-profile-info" class="hidden md:flex items-center gap-3 border-r border-teal-700/50 pr-4">
+                            <div id="header-avatar-container" class="w-10 h-10 rounded-full bg-emerald-700 border-2 border-emerald-400 overflow-hidden flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                                <span id="header-avatar-initial">SA</span>
+                                <img id="header-avatar-img" src="" alt="Foto" class="w-full h-full object-cover hidden">
+                            </div>
+                            <div class="text-right">
+                                <p id="profile-name" class="text-sm font-bold text-white leading-tight">Super Admin</p>
+                                <p id="profile-role" class="text-[10px] text-emerald-300 uppercase tracking-wider">Akses Penuh</p>
+                            </div>
+                        </div>
+                        <button type="button" id="header-btn-tambah" onclick="switchTab('input-kasus')" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-4 py-2 rounded-lg text-sm shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle"></i>
+                            <span class="hidden lg:inline">Laporkan Kasus</span>
+                        </button>
+                        <button type="button" onclick="handleLogout()" class="bg-slate-800/80 hover:bg-red-600 text-slate-200 hover:text-white px-3 py-2 rounded-lg text-sm transition shadow-md flex items-center gap-2" title="Keluar">
+                            <i class="fa-solid fa-power-off"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 flex flex-col md:flex-row w-full px-0 py-0 gap-0">
+            <aside id="app-sidebar" class="sidebar-transition w-full md:w-64 bg-white border-r border-slate-200 shadow-sm p-4 flex flex-col justify-between shrink-0 no-print">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <span id="sidebar-title" class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Navigasi Menu</span>
+                    </div>
+                    
+                    <nav id="sidebar-nav-container" class="space-y-1.5 flex flex-col">
+                        <button type="button" id="tab-btn-dashboard" onclick="switchTab('dashboard')" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-slate-700 bg-emerald-50 text-emerald-900 font-bold hover:bg-emerald-100 transition flex items-center gap-3">
+                            <i class="fa-solid fa-chart-pie text-emerald-600 text-lg w-5 text-center shrink-0"></i> 
+                            <span class="sidebar-label font-semibold">Dashboard & Statistik</span>
+                        </button>
+                        <button type="button" id="tab-btn-input-kasus" onclick="switchTab('input-kasus')" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center gap-3">
+                            <i class="fa-solid fa-pen-to-square text-amber-600 text-lg w-5 text-center shrink-0"></i> 
+                            <span class="sidebar-label font-semibold">Laporkan Kasus</span>
+                        </button>
+                        <button type="button" id="tab-btn-penyuluhan" onclick="switchTab('penyuluhan')" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center gap-3">
+                            <i class="fa-solid fa-chalkboard-user text-teal-600 text-lg w-5 text-center shrink-0"></i> 
+                            <span class="sidebar-label font-semibold">Penyuluhan Hukum</span>
+                        </button>
+                        <button type="button" id="tab-btn-database" onclick="switchTab('database')" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center gap-3">
+                            <i class="fa-solid fa-folder-open text-teal-600 text-lg w-5 text-center shrink-0"></i> 
+                            <span class="sidebar-label font-semibold">Database Kasus Desa</span>
+                        </button>
+                        <button type="button" id="tab-btn-data-paralegal" onclick="switchTab('data-paralegal')" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center gap-3">
+                            <i class="fa-solid fa-users text-teal-700 text-lg w-5 text-center shrink-0"></i> 
+                            <span class="sidebar-label font-semibold">Data Paralegal</span>
+                        </button>
+                        <button type="button" id="tab-btn-berita" onclick="switchTab('berita')" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center gap-3">
+                            <i class="fa-solid fa-newspaper text-amber-700 text-lg w-5 text-center shrink-0"></i> 
+                            <span class="sidebar-label font-semibold">Berita Paralegal</span>
+                        </button>
+                        <button type="button" id="tab-btn-kepuasan" onclick="switchTab('kepuasan')" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center gap-3">
+                            <i class="fa-solid fa-star text-amber-500 text-lg w-5 text-center shrink-0"></i> 
+                            <span class="sidebar-label font-semibold">Kepuasan Layanan</span>
+                        </button>
+                        <button type="button" id="tab-btn-paralegal-management" onclick="switchTab('paralegal-management')" class="tab-btn admin-only-menu hidden w-full text-left px-3.5 py-3 rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center gap-3">
+                            <i class="fa-solid fa-users-gear text-gov-700 text-lg w-5 text-center shrink-0"></i> 
+                            <span class="sidebar-label font-semibold">Kelola Akun Paralegal</span>
+                        </button>
+                        <button type="button" id="tab-btn-setting" onclick="switchTab('setting')" class="tab-btn w-full text-left px-3.5 py-3 rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center gap-3">
+                            <i class="fa-solid fa-gear text-indigo-600 text-lg w-5 text-center shrink-0"></i> 
+                            <span class="sidebar-label font-semibold">Setting & Profil</span>
+                        </button>
+                        <button type="button" id="tab-btn-sheets" onclick="switchTab('sheets')" class="tab-btn admin-only-menu hidden w-full text-left px-3.5 py-3 rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center gap-3">
+                            <i class="fa-solid fa-file-excel text-emerald-700 text-lg w-5 text-center shrink-0"></i> 
+                            <span class="sidebar-label font-semibold">Koneksi Google Sheets</span>
+                        </button>
+                    </nav>
+                </div>
+            </aside>
+
+            <main class="flex-1 w-full p-4 sm:p-6 overflow-hidden no-print flex flex-col gap-6">
+
+                <!-- Tab Dashboard & Statistik -->
+                <section id="tab-dashboard" class="tab-content space-y-6">
+                    <div class="bg-gradient-to-r from-emerald-700 via-teal-800 to-gov-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden flex flex-col justify-between border border-emerald-600/30">
+                        <div class="relative z-10 max-w-2xl">
+                            <span class="bg-white/20 backdrop-blur-md text-white text-xs sm:text-sm font-extrabold px-3.5 py-1.5 rounded-full border border-white/30 inline-block mb-3 shadow-sm tracking-wide">Dinas Pemberdayaan Masyarakat dan Desa Kab. Tanah Laut</span>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white drop-shadow-md">Pos Bantuan Hukum Desa (POSBANKUM)</h2>
+                            <p class="text-emerald-50 text-sm mt-2 leading-relaxed opacity-90">
+                                Mewujudkan pemerataan akses keadilan hukum bagi seluruh masyarakat desa/kelurahan di 11 Kecamatan se-Kabupaten Tanah Laut (Cloud Database Synchronized).
+                            </p>
+                        </div>
+                        <i class="fa-solid fa-scale-balanced text-9xl absolute -right-4 -bottom-6 opacity-10 text-white transform -rotate-12"></i>
+                    </div>
+
+                    <div id="dashboard-paralegal-badge" class="bg-gradient-to-r from-slate-50 to-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 overflow-hidden border-2 border-emerald-300 flex items-center justify-center font-bold text-lg shrink-0 shadow-inner">
+                                <i id="dash-paralegal-icon" class="fa-solid fa-user-shield text-emerald-600"></i>
+                                <img id="dash-avatar-img" src="" alt="Foto" class="w-full h-full object-cover hidden">
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">PETUGAS AKTIF & CAKUPAN WILAYAH</span>
+                                <h4 id="dash-paralegal-name" class="font-bold text-sm text-slate-800">-</h4>
+                                <p id="dash-paralegal-wilayah" class="text-xs text-emerald-700 font-medium">-</p>
+                            </div>
+                        </div>
+                        <div class="hidden sm:flex items-center gap-3">
+                            <button type="button" onclick="fetchAllCloudData()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs shadow transition flex items-center gap-2">
+                                <i class="fa-solid fa-rotate"></i> Sinkronisasi Cloud Google Sheets
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Statistik Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="bg-gradient-to-br from-white to-teal-50 p-5 rounded-2xl border border-teal-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-[10px] font-bold text-teal-600/70 uppercase tracking-wider">Total Kasus Masuk</p>
+                                <h3 id="stat-total" class="text-3xl font-extrabold text-slate-800 mt-1">0</h3>
+                                <p class="text-[11px] text-teal-600 mt-1 font-medium"><i class="fa-solid fa-building-columns me-1"></i>130 Desa / 5 Kel</p>
+                            </div>
+                            <div class="w-12 h-12 bg-teal-100/60 text-teal-600 rounded-xl flex items-center justify-center text-xl font-bold shadow-inner">
+                                <i class="fa-solid fa-file-shield"></i>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-white to-blue-50 p-5 rounded-2xl border border-blue-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-[10px] font-bold text-blue-600/70 uppercase tracking-wider">Selesai via Konsultasi</p>
+                                <h3 id="stat-konsultasi" class="text-3xl font-extrabold text-slate-800 mt-1">0</h3>
+                                <p class="text-[11px] text-blue-600 mt-1 font-medium"><i class="fa-solid fa-comments me-1"></i>Posbankum Desa</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100/60 text-blue-600 rounded-xl flex items-center justify-center text-xl font-bold shadow-inner">
+                                <i class="fa-solid fa-headset"></i>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-white to-emerald-50 p-5 rounded-2xl border border-emerald-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-[10px] font-bold text-emerald-600/70 uppercase tracking-wider">Selesai via Mediasi</p>
+                                <h3 id="stat-mediasi-2" class="text-3xl font-extrabold text-slate-800 mt-1">0</h3>
+                                <p class="text-[11px] text-emerald-600 mt-1 font-medium"><i class="fa-solid fa-handshake me-1"></i>Restoratif Desa</p>
+                            </div>
+                            <div class="w-12 h-12 bg-emerald-100/60 text-emerald-600 rounded-xl flex items-center justify-center text-xl font-bold shadow-inner">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-white to-indigo-50 p-5 rounded-2xl border border-indigo-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-[10px] font-bold text-indigo-600/70 uppercase tracking-wider">Selesai via Rujukan</p>
+                                <h3 id="stat-diteruskan" class="text-3xl font-extrabold text-slate-800 mt-1">0</h3>
+                                <p class="text-[11px] text-indigo-600 mt-1 font-medium"><i class="fa-solid fa-gavel me-1"></i>LBH & Pengadilan</p>
+                            </div>
+                            <div class="w-12 h-12 bg-indigo-100/60 text-indigo-600 rounded-xl flex items-center justify-center text-xl font-bold shadow-inner">
+                                <i class="fa-solid fa-scale-unbalanced-flip"></i>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-white to-slate-100 p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-600/70 uppercase tracking-wider">Selesai Dihentikan</p>
+                                <h3 id="stat-dihentikan" class="text-3xl font-extrabold text-slate-800 mt-1">0</h3>
+                                <p class="text-[11px] text-slate-600 mt-1 font-medium"><i class="fa-solid fa-box-archive me-1"></i>Diarsipkan</p>
+                            </div>
+                            <div class="w-12 h-12 bg-slate-200/80 text-slate-700 rounded-xl flex items-center justify-center text-xl font-bold shadow-inner">
+                                <i class="fa-solid fa-folder-closed"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm">
+                                    <i class="fa-solid fa-chart-pie text-emerald-600 text-lg"></i> Persentase Jenis Kasus Hukum (Jumlah & %)
+                                </h3>
+                            </div>
+                            <div class="h-80 flex justify-center items-center relative"><canvas id="chartJenisKasus"></canvas></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm">
+                                    <i class="fa-solid fa-chart-pie text-blue-600 text-lg"></i> Persentase Metode Penyelesaian Kasus (Jumlah & %)
+                                </h3>
+                            </div>
+                            <div class="h-80 flex justify-center items-center relative"><canvas id="chartMetodePenyelesaian"></canvas></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm">
+                                    <i class="fa-solid fa-star text-amber-500 text-lg"></i> Diagram Kepuasan Layanan Bantuan Hukum
+                                </h3>
+                            </div>
+                            <div class="h-80 flex justify-center items-center relative"><canvas id="chartKepuasanLayanan"></canvas></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm">
+                                    <i class="fa-solid fa-chart-column text-teal-600 text-lg"></i> Kegiatan Penyuluhan per Kecamatan
+                                </h3>
+                            </div>
+                            <div class="h-72 flex justify-center items-center relative"><canvas id="chartPenyuluhanKecamatan"></canvas></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 lg:col-span-2">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm">
+                                    <i class="fa-solid fa-chart-line text-amber-600 text-lg"></i> Tren Penekanan Kasus (2024 - 2026)
+                                </h3>
+                            </div>
+                            <div class="h-72 flex justify-center items-center relative"><canvas id="chartTrenKasus"></canvas></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab Input Kasus -->
+                <section id="tab-input-kasus" class="tab-content hidden max-w-4xl mx-auto space-y-6">
+                    <div class="bg-white rounded-3xl border border-slate-200 shadow-md p-6 sm:p-8">
+                        <div class="border-b border-slate-200 pb-4 mb-6 flex items-center justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-file-circle-plus text-emerald-700"></i> Form Formulir Kasus Posbankum Desa
+                                </h2>
+                                <p class="text-sm text-slate-500 mt-1">Masukkan rincian identitas pelapor dan perkara hukum yang diajukan ke Pos Bantuan Hukum Desa.</p>
+                            </div>
+                        </div>
+
+                        <form id="form-kasus" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                            <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-200/60 space-y-4">
+                                <h3 class="font-bold text-emerald-900 text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-emerald-600"></i> 1. Lokasi Posbankum Desa Penerima
+                                </h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kecamatan <span class="text-red-500">*</span></label>
+                                        <select id="input-kecamatan" onchange="onInputKecamatanChange()" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                                            <option value="">-- Pilih Kecamatan --</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Desa / Kelurahan <span class="text-red-500">*</span></label>
+                                        <select id="input-desa" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                                            <option value="">-- Pilih Kecamatan Terlebih Dahulu --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 border-b border-slate-200 pb-2">
+                                    <i class="fa-solid fa-user text-emerald-600"></i> 2. Identitas Pemohon / Pelapor
+                                </h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap Pelapor <span class="text-red-500">*</span></label>
+                                        <input type="text" id="input-nama" required placeholder="Sesuai KTP / KK" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">NIK (16 Digit) <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                                        <input type="text" id="input-nik" maxlength="16" placeholder="16 Digit NIK" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Kelamin <span class="text-red-500">*</span></label>
+                                        <select id="input-gender" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                                            <option value="">-- Pilih Jenis Kelamin --</option>
+                                            <option value="Laki-Laki">Laki-Laki</option>
+                                            <option value="Perempuan">Perempuan</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Pendidikan Terakhir <span class="text-red-500">*</span></label>
+                                        <select id="input-pendidikan" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                                            <option value="">-- Pilih Pendidikan Terakhir --</option>
+                                            <option value="Tidak / Belum Sekolah">Tidak / Belum Sekolah</option>
+                                            <option value="SD / Sederajat">SD / Sederajat</option>
+                                            <option value="SMP / Sederajat">SMP / Sederajat</option>
+                                            <option value="SMA / SMK / Sederajat">SMA / SMK / Sederajat</option>
+                                            <option value="Diploma (D1/D2/D3)">Diploma (D1/D2/D3)</option>
+                                            <option value="Sarjana (S1 / D4)">Sarjana (S1 / D4)</option>
+                                            <option value="Pascasarjana (S2 / S3)">Pascasarjana (S2 / S3)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Telepon / WhatsApp <span class="text-red-500">*</span></label>
+                                        <input type="text" id="input-hp" required placeholder="08xxxxxxxxxx" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Pemohon <span class="text-red-500">*</span></label>
+                                        <select id="input-kategori-pemohon" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                                            <option value="Masyarakat Kurang Mampu (SKTM)">Masyarakat Kurang Mampu (Pemegang SKTM)</option>
+                                            <option value="Masyarakat Umum">Masyarakat Umum Desa</option>
+                                            <option value="Kelompok Rentan / Perempuan & Anak">Kelompok Rentan / Perempuan & Anak</option>
+                                        </select>
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Lengkap RT/RW <span class="text-red-500">*</span></label>
+                                        <input type="text" id="input-alamat" required placeholder="Jalan, RT / RW, Dusun" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 border-b border-slate-200 pb-2">
+                                    <i class="fa-solid fa-gavel text-emerald-600"></i> 3. Uraian Perkara Hukum, Waktu & Foto
+                                </h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Kasus Hukum <span class="text-red-500">*</span></label>
+                                        <select id="input-jenis-kasus" required onchange="checkJenisKasusLainnya(this.value)" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                                            <option value="">-- Pilih Kategori Hukum --</option>
+                                            <option value="Perdata - Sengketa Tanah/Lahan">Perdata - Sengketa Tanah / Lahan</option>
+                                            <option value="Perdata - Waris & Keluarga">Perdata - Hak Waris & Sengketa Keluarga</option>
+                                            <option value="Perdata - Hutang Piutang">Perdata - Hutang Piutang / Perjanjian</option>
+                                            <option value="Pidana - Penganiayaan / Kekerasan">Pidana - Penganiayaan / Kekerasan</option>
+                                            <option value="Pidana - KDRT">Pidana - Kekerasan Dalam Rumah Tangga (KDRT)</option>
+                                            <option value="Tata Usaha Negara / Batas Desa">Tata Usaha Negara / Batas Wilayah Desa</option>
+                                            <option value="Konsultasi Hukum Umum">Konsultasi Hukum Umum</option>
+                                            <option value="Lainnya">Lainnya (Sebutkan di Kronologi / Catatan)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Bantuan Hukum Yang Diminta <span class="text-red-500">*</span></label>
+                                        <select id="input-bantuan" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                                            <option value="Konsultasi Hukum Gratis">Konsultasi Hukum Gratis</option>
+                                            <option value="Mediasi / Perdamaian Desa">Mediasi / Perdamaian Tingkat Desa</option>
+                                            <option value="Pendampingan Rujukan LBH / OBH">Pendampingan Rujukan ke LBH / OBH Terakreditasi</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Kejadian / Peristiwa <span class="text-red-500">*</span></label>
+                                        <input type="date" id="input-tgl-kejadian" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Pelaporan Posbankum <span class="text-red-500">*</span></label>
+                                        <input type="date" id="input-tgl-pelaporan" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Ringkasan Kronologi Kasus <span class="text-red-500">*</span></label>
+                                        <textarea id="input-kronologi" required rows="4" placeholder="Jelaskan secara singkat peristiwa..." class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Upload Foto / Dokumen Perkara <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                                        <input type="file" id="input-foto-pelapor" accept="image/*" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-emerald-500 outline-none bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 border-b border-slate-200 pb-2">
+                                    <i class="fa-solid fa-clipboard-check text-emerald-600"></i> 4. Status Penanganan Awal & Catatan Petugas
+                                </h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status Penanganan Awal <span class="text-red-500">*</span></label>
+                                        <select id="input-status-penanganan" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                                            <option value="Tahap Konsultasi">Tahap Konsultasi</option>
+                                            <option value="Tahap Mediasi">Tahap Mediasi</option>
+                                            <option value="Tahap Rujukan">Tahap Rujukan</option>
+                                            <option value="Selesai via Konsultasi">Selesai via Konsultasi</option>
+                                            <option value="Selesai via Mediasi">Selesai via Mediasi</option>
+                                            <option value="Selesai via Rujukan">Selesai via Rujukan</option>
+                                            <option value="Selesai Dihentikan">Selesai Dihentikan / Diarsipkan</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Petugas / Paralegal Pendamping <span class="text-red-500">*</span></label>
+                                        <input type="text" id="input-petugas-pendamping" required readonly placeholder="Otomatis dari akun login" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-slate-100 font-bold text-emerald-800 cursor-not-allowed">
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan / Rekomendasi Petugas <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                                        <textarea id="input-catatan-petugas" rows="3" placeholder="Catatan hasil wawancara awal atau langkah tindak lanjut..." class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
+                                <button type="button" onclick="switchTab('dashboard')" class="px-5 py-2.5 border border-slate-300 text-slate-700 font-semibold rounded-xl text-sm hover:bg-slate-50 transition">
+                                    Batal
+                                </button>
+                                <button type="submit" class="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-sm shadow-md transition flex items-center gap-2">
+                                    <i class="fa-solid fa-paper-plane"></i> Simpan Data Kasus (Google Sheets)
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Tab Penyuluhan Hukum -->
+                <section id="tab-penyuluhan" class="tab-content hidden max-w-4xl mx-auto space-y-6">
+                    <div class="bg-white rounded-3xl border border-slate-200 shadow-md p-6 sm:p-8 space-y-6">
+                        <div class="border-b border-slate-200 pb-4 flex items-center justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-chalkboard-user text-teal-700"></i> Formulir Kegiatan Penyuluhan Hukum
+                                </h2>
+                                <p class="text-sm text-slate-500 mt-1">Catat dan laporkan kegiatan penyuluhan hukum yang telah diikuti atau diselenggarakan oleh Paralegal.</p>
+                            </div>
+                        </div>
+
+                        <form id="form-penyuluhan" onsubmit="handlePenyuluhanSubmit(event)" class="space-y-5">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Kegiatan <span class="text-red-500">*</span></label>
+                                    <input type="date" id="penyuluhan-tgl" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Kegiatan <span class="text-red-500">*</span></label>
+                                    <input type="text" id="penyuluhan-nama" required placeholder="Contoh: Penyuluhan Sadar Hukum Warga Desa" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Kecamatan Lokasi Kegiatan <span class="text-red-500">*</span></label>
+                                    <select id="penyuluhan-tempat" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-white">
+                                        <option value="">-- Pilih Kecamatan Lokasi Penyuluhan --</option>
+                                    </select>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kolom Narasumber <span class="text-red-500">*</span></label>
+                                    <input type="text" id="penyuluhan-narasumber" required placeholder="Masukkan nama dan gelar narasumber..." class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Upload Foto / Dokumentasi Kegiatan <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                                    <input type="file" id="penyuluhan-foto" accept="image/*" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-teal-500 outline-none bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Paralegal Desa / Petugas Mengikuti <span class="text-red-500">*</span></label>
+                                    <input type="text" id="penyuluhan-paralegal-nama" readonly class="w-full border border-slate-200 rounded-xl p-3 text-sm bg-slate-100 text-teal-800 font-bold cursor-not-allowed">
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full py-3.5 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-xl shadow-md transition text-sm flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i> Simpan & Publikasikan Kegiatan Penyuluhan
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 border-b border-slate-100 pb-3">
+                            <i class="fa-solid fa-list-check text-teal-700"></i> Daftar Riwayat Kegiatan Penyuluhan Hukum
+                        </h3>
+                        <div id="penyuluhan-list-container" class="space-y-4"></div>
+                    </div>
+                </section>
+
+                <!-- Tab Database -->
+                <section id="tab-database" class="tab-content hidden space-y-4">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
+                            <div class="relative w-full md:w-80">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="filter-search" oninput="renderDatabaseTable()" placeholder="Cari Nama, NIK, No Reg..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="database-scope-badge" class="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200"></span>
+                                <button type="button" onclick="fetchAllCloudData()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs shadow transition flex items-center gap-2">
+                                    <i class="fa-solid fa-rotate"></i> Sinkronisasi Cloud
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                            <span class="text-sm font-semibold text-slate-700">
+                                Menampilkan <span id="count-filtered" class="text-emerald-700 font-bold">0</span> Laporan Kasus (Ubah Status Langsung pada Tabel)
+                            </span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600">
+                                <thead class="bg-slate-100 text-slate-700 font-bold text-xs uppercase tracking-wider border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-3.5">No. Reg</th>
+                                        <th class="p-3.5">Tgl Masuk</th>
+                                        <th class="p-3.5">Pelapor & NIK</th>
+                                        <th class="p-3.5">Posbankum Desa</th>
+                                        <th class="p-3.5">Jenis Kasus</th>
+                                        <th class="p-3.5">Status Penanganan / Penyelesaian</th>
+                                        <th class="p-3.5 text-center">Petugas</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="database-table-body" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab Data Paralegal -->
+                <section id="tab-data-paralegal" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                            <div>
+                                <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-users text-teal-700"></i> Direktori 135 Paralegal Desa & Kelurahan
+                                </h2>
+                                <p class="text-xs text-slate-500 mt-1">Daftar lengkap petugas paralegal pos bantuan hukum di 11 Kecamatan Kabupaten Tanah Laut. Hubungi via WhatsApp untuk konsultasi.</p>
+                            </div>
+                            <div class="relative w-full sm:w-72">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="directory-search" oninput="renderDataParalegalGrid()" placeholder="Cari desa atau nama paralegal..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-teal-500">
+                            </div>
+                        </div>
+
+                        <div id="directory-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                    </div>
+                </section>
+
+                <!-- Tab Berita Paralegal -->
+                <section id="tab-berita" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                            <div>
+                                <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-newspaper text-amber-700"></i> Publikasi Berita & Kegiatan Paralegal (Cloud)
+                                </h2>
+                                <p class="text-xs text-slate-500 mt-1">Informasi kegiatan dan publikasi pos bantuan hukum desa di Kabupaten Tanah Laut.</p>
+                            </div>
+                            <button type="button" onclick="openBeritaModal()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs shadow transition flex items-center gap-2 shrink-0">
+                                <i class="fa-solid fa-plus-circle"></i> Tambah Berita / Kegiatan
+                            </button>
+                        </div>
+
+                        <div id="berita-list-container" class="space-y-6"></div>
+                    </div>
+                </section>
+
+                <!-- Tab Kepuasan Layanan -->
+                <section id="tab-kepuasan" class="tab-content hidden max-w-3xl mx-auto space-y-6">
+                    <div class="bg-white rounded-3xl border border-slate-200 shadow-md p-6 sm:p-10 space-y-6">
+                        <div class="border-b border-slate-100 pb-5">
+                            <div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl font-bold mb-3 shadow-inner">
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <h2 class="text-2xl font-extrabold text-slate-800">Penilaian Kepuasan Layanan Bantuan Hukum</h2>
+                            <p class="text-sm text-slate-500 mt-1">Bantu kami meningkatkan kualitas layanan Pos Bantuan Hukum Desa (POSBANKUM) di Kabupaten Tanah Laut dengan memberikan penilaian Anda.</p>
+                        </div>
+
+                        <form id="form-kepuasan" onsubmit="handleKepuasanSubmit(event)" class="space-y-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama <span class="text-slate-400 font-normal">(Opsional / Kosongkan untuk Anonim)</span></label>
+                                <input type="text" id="kepuasan-nama" placeholder="Nama Lengkap Pelapor / Warga" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Desa / Kelurahan <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                                <input type="text" id="kepuasan-desa" placeholder="Contoh: Desa Batakan" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-2">Penilaian Bintang <span class="text-red-500">*</span></label>
+                                <div class="flex items-center gap-2 mb-2" id="star-rating-container">
+                                    <button type="button" onclick="setStarRating(1)" class="star-btn text-3xl text-slate-300 hover:text-amber-400 transition" data-value="1"><i class="fa-solid fa-star"></i></button>
+                                    <button type="button" onclick="setStarRating(2)" class="star-btn text-3xl text-slate-300 hover:text-amber-400 transition" data-value="2"><i class="fa-solid fa-star"></i></button>
+                                    <button type="button" onclick="setStarRating(3)" class="star-btn text-3xl text-slate-300 hover:text-amber-400 transition" data-value="3"><i class="fa-solid fa-star"></i></button>
+                                    <button type="button" onclick="setStarRating(4)" class="star-btn text-3xl text-slate-300 hover:text-amber-400 transition" data-value="4"><i class="fa-solid fa-star"></i></button>
+                                    <button type="button" onclick="setStarRating(5)" class="star-btn text-3xl text-slate-300 hover:text-amber-400 transition" data-value="5"><i class="fa-solid fa-star"></i></button>
+                                    <input type="hidden" id="kepuasan-bintang" value="5" required>
+                                </div>
+                                <p id="star-label-desc" class="text-xs font-bold text-amber-600">Sangat Memuaskan (5 Bintang)</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Kritik dan Saran <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                                <textarea id="kepuasan-saran" rows="4" placeholder="Tuliskan kritik, saran, atau masukan untuk perbaikan layanan..." class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-3.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-md transition text-sm flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i> Kirim Penilaian Kepuasan Layanan (Cloud)
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Tab Kelola Akun Paralegal -->
+                <section id="tab-paralegal-management" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                            <div>
+                                <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-users-gear text-gov-700"></i> Kelola 135 Akun Paralegal Desa & Kelurahan (Cloud Database)
+                                </h2>
+                                <p class="text-xs text-slate-500 mt-1">Tambah, edit, atau hapus akun paralegal untuk 11 Kecamatan di Kabupaten Tanah Laut.</p>
+                            </div>
+                            <button type="button" onclick="openParalegalModal('add')" class="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs shadow transition flex items-center gap-2 shrink-0">
+                                <i class="fa-solid fa-user-plus"></i> Tambah Akun Baru
+                            </button>
+                        </div>
+
+                        <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
+                            <div class="relative w-full md:w-80">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="paralegal-mgmt-search" oninput="renderParalegalManagementTable()" placeholder="Cari desa, kecamatan, username..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <span class="text-xs font-semibold text-slate-600">Total Akun Terdaftar: <strong id="paralegal-count-badge" class="text-emerald-700">0</strong></span>
+                        </div>
+
+                        <div class="overflow-x-auto border border-slate-200 rounded-2xl">
+                            <table class="w-full text-left text-xs text-slate-700">
+                                <thead class="bg-slate-100 font-bold uppercase text-[10px] text-slate-600 border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-3.5">Wilayah (Desa / Kelurahan)</th>
+                                        <th class="p-3.5">Kecamatan</th>
+                                        <th class="p-3.5">Nama Paralegal</th>
+                                        <th class="p-3.5">Username Login</th>
+                                        <th class="p-3.5">Password</th>
+                                        <th class="p-3.5 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paralegal-mgmt-tbody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab Google Sheets -->
+                <section id="tab-sheets" class="tab-content hidden max-w-4xl mx-auto space-y-6">
+                    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-10 space-y-6">
+                        <div class="border-b border-slate-100 pb-5">
+                            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-file-excel text-emerald-700"></i> Integrasi Google Sheets API & Web App Cloud
+                            </h2>
+                            <p class="text-sm text-slate-500 mt-1">Sambungkan aplikasi SI-POSBANKUM ke Google Sheets untuk menyimpan Kasus, Profil Paralegal, Berita, dan Kepuasan Layanan secara cloud.</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Google Apps Script Web App URL</label>
+                                <div class="flex gap-2">
+                                    <input type="url" id="sheets-url-input" placeholder="https://script.google.com/macros/s/.../exec" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-mono text-xs">
+                                    <button type="button" onclick="saveSheetsConfig()" class="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-sm transition shadow shrink-0">
+                                        Simpan URL
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab Setting & Profil -->
+                <section id="tab-setting" class="tab-content hidden max-w-4xl mx-auto space-y-6">
+                    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-10 space-y-8">
+                        <div class="border-b border-slate-100 pb-5">
+                            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-user-gear text-indigo-600"></i> Pengaturan Akun, Profil & Keamanan Cloud
+                            </h2>
+                            <p class="text-sm text-slate-500 mt-1">Kelola identitas akun login, nama lengkap & gelar, tempat/tanggal lahir, nomor telepon (WA), dan foto profil (tersimpan di Google Sheets).</p>
+                        </div>
+
+                        <div class="bg-emerald-50/50 p-6 rounded-2xl border border-emerald-200/80 space-y-4">
+                            <h3 class="font-bold text-emerald-900 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-id-card text-emerald-600 text-lg"></i> Informasi Identitas Akun Login
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Username Login</label>
+                                    <input type="text" id="setting-info-username" readonly class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-100 font-mono text-emerald-800 font-bold cursor-not-allowed">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Wilayah Tugas / Desa</label>
+                                    <input type="text" id="setting-info-wilayah" readonly class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-100 font-bold text-slate-700 cursor-not-allowed">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-5">
+                            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 border-b border-slate-200 pb-3">
+                                <i class="fa-solid fa-user-pen text-teal-600 text-lg"></i> Form Pembaruan Profil & Foto (Cloud Sync)
+                            </h3>
+                            <form onsubmit="handleProfileUpdate(event)" class="space-y-5">
+                                <div class="flex flex-col sm:flex-row items-center gap-6 pb-4 border-b border-slate-200">
+                                    <div class="w-24 h-24 rounded-full bg-emerald-100 border-4 border-emerald-300 overflow-hidden flex items-center justify-center text-emerald-800 font-bold text-2xl shadow-inner shrink-0 relative">
+                                        <span id="setting-avatar-initial">SA</span>
+                                        <img id="setting-avatar-preview" src="" alt="Preview Foto" class="w-full h-full object-cover hidden">
+                                    </div>
+                                    <div class="space-y-2 w-full">
+                                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide">Upload Foto Profil Baru (Cloud)</label>
+                                        <input type="file" id="setting-input-photo" accept="image/*" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-teal-500 outline-none bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700">
+                                        <p class="text-[11px] text-slate-500">Format gambar JPG, PNG, atau WEBP. Foto tersimpan secara cloud di Google Sheets.</p>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap & Gelar</label>
+                                        <input type="text" id="setting-input-fullname" required placeholder="Contoh: H. Ahmad Supian, S.H." class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-white font-bold">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Tempat Lahir</label>
+                                        <input type="text" id="setting-input-tmplahir" placeholder="Pelaihari" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-white">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Lahir</label>
+                                        <input type="date" id="setting-input-tgllahir" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-white">
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Nomor Telepon / WhatsApp (WA)</label>
+                                        <input type="text" id="setting-input-hp" placeholder="08xxxxxxxxxx" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-white">
+                                    </div>
+                                </div>
+                                <button type="submit" class="py-3.5 px-6 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-md transition text-sm flex items-center justify-center gap-2 w-full sm:w-auto">
+                                    <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan Profil ke Cloud
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <aside class="w-full md:w-72 bg-white border-l border-slate-200 shadow-sm p-4 flex flex-col gap-6 shrink-0 no-print">
+                <div class="space-y-3">
+                    <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-user-check text-emerald-600"></i> Paralegal Online
+                    </h3>
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-center gap-3">
+                        <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shrink-0"></div>
+                        <div>
+                            <span id="online-counter-badge" class="font-bold text-emerald-900 text-sm">1 Orang Online</span>
+                            <p class="text-[10px] text-emerald-700">Aktif mengakses sistem saat ini</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-globe text-emerald-600"></i> Aplikasi Terkait
+                    </h3>
+                    <div class="space-y-2">
+                        <a href="https://sikumdes.tesapp.site/" target="_blank" class="block p-3 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition group">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-xs group-hover:text-emerald-800">SI-KUMDES</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-emerald-600"></i>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mt-0.5">Sistem Informasi Hukum Desa</p>
+                        </a>
+                        <a href="https://siapdesa.tanahlautkab.go.id/" target="_blank" class="block p-3 rounded-xl border border-slate-200 hover:border-teal-500 hover:bg-teal-50/50 transition group">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 text-xs group-hover:text-teal-800">SIAP DESA</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-teal-600"></i>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mt-0.5">Kabupaten Tanah Laut</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-2 border-t border-slate-100">
+                    <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-headset text-emerald-600"></i> Layanan Bantuan & Admin
+                    </h3>
+                    <div class="space-y-2.5">
+                        <button type="button" onclick="openLiveChatModal()" class="w-full py-2.5 px-3 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-comments"></i> Live Chat ke Super Admin
+                        </button>
+                        <a href="https://wa.me/6285155221304?text=Halo%20Admin%20Aan,%20saya%20ingin%20berkonsultasi%20mengenai%20SI-POSBANKUM." target="_blank" class="w-full py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold rounded-xl text-xs border border-emerald-200 transition flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i> Admin Aan (085155221304)
+                        </a>
+                        <a href="https://wa.me/6281351333872?text=Halo%20Admin%20Danny,%20saya%20ingin%20berkonsultasi%20mengenai%20SI-POSBANKUM." target="_blank" class="w-full py-2.5 px-3 bg-teal-50 hover:bg-teal-100 text-teal-900 font-bold rounded-xl text-xs border border-teal-200 transition flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-teal-600 text-sm"></i> Admin Danny (081351333872)
+                        </a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="paralegal-form-modal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden flex flex-col shadow-2xl border border-slate-200">
+            <div class="p-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <h3 id="paralegal-modal-title" class="font-extrabold text-slate-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-emerald-700"></i> Tambah Akun Paralegal
+                </h3>
+                <button type="button" onclick="closeParalegalModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-red-500 hover:text-white transition flex items-center justify-center text-slate-700">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="paralegal-modal-form" onsubmit="handleParalegalFormSubmit(event)" class="p-6 space-y-4">
+                <input type="hidden" id="modal-original-username">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Username Login <span class="text-red-500">*</span></label>
+                    <input type="text" id="modal-username" required placeholder="paralegal_namadesa" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Password <span class="text-red-500">*</span></label>
+                    <input type="text" id="modal-password" required placeholder="paralegal123" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap & Gelar <span class="text-red-500">*</span></label>
+                    <input type="text" id="modal-fullname" required placeholder="Paralegal Nama Desa" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kecamatan <span class="text-red-500">*</span></label>
+                        <select id="modal-kecamatan" required class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                            <option value="">-- Pilih Kecamatan --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Nama Desa / Kelurahan <span class="text-red-500">*</span></label>
+                        <input type="text" id="modal-desa" required placeholder="Desa / Kelurahan" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+                <div class="pt-4 flex items-center justify-end gap-2 border-t border-slate-100">
+                    <button type="button" onclick="closeParalegalModal()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-700 text-white font-bold rounded-xl text-xs hover:bg-emerald-800 transition shadow">Simpan Akun Cloud</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Berita -->
+    <div id="berita-form-modal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden flex flex-col shadow-2xl border border-slate-200">
+            <div class="p-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <h3 class="font-extrabold text-slate-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-newspaper text-amber-700"></i> Publikasi Berita / Kegiatan Paralegal
+                </h3>
+                <button type="button" onclick="closeBeritaModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-red-500 hover:text-white transition flex items-center justify-center text-slate-700">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="berita-modal-form" onsubmit="handleBeritaFormSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Judul Berita / Kegiatan <span class="text-red-500">*</span></label>
+                    <input type="text" id="berita-modal-judul" required placeholder="Contoh: Penyuluhan Hukum Serentak di Desa..." class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Isi Berita / Keterangan <span class="text-red-500">*</span></label>
+                    <textarea id="berita-modal-isi" required rows="4" placeholder="Tuliskan laporan atau rincian kegiatan..." class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Upload Foto / Dokumentasi (Opsional)</label>
+                    <input type="file" id="berita-modal-foto" accept="image/*" class="w-full border border-slate-300 rounded-xl p-2 text-xs outline-none bg-white file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Link Video YouTube / Media (Opsional)</label>
+                    <input type="url" id="berita-modal-video" placeholder="https://www.youtube.com/watch?v=..." class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div class="pt-4 flex items-center justify-end gap-2 border-t border-slate-100">
+                    <button type="button" onclick="closeBeritaModal()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs hover:bg-amber-700 transition shadow">Kirim Berita Cloud</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Live Chat Modal -->
+    <div id="live-chat-modal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden flex flex-col shadow-2xl border border-slate-200 h-[500px]">
+            <div class="p-4 bg-gradient-to-r from-emerald-800 to-teal-900 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">Live Chat • Super Admin</h3>
+                        <p class="text-[10px] text-emerald-200">Online • Siap Membantu</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeLiveChatModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-red-500 transition flex items-center justify-center text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50 custom-scrollbar text-xs">
+                <div class="flex items-start gap-2">
+                    <div class="w-7 h-7 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold shrink-0">SA</div>
+                    <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm text-slate-800 max-w-[80%]">
+                        Halo! Selamat datang di Layanan Bantuan SI-POSBANKUM. Ada yang dapat kami bantu terkait administrasi pos bantuan hukum desa?
+                    </div>
+                </div>
+            </div>
+            <form onsubmit="handleChatSend(event)" class="p-3 bg-white border-t border-slate-200 flex gap-2">
+                <input type="text" id="chat-input-msg" required placeholder="Tulis pesan ke Super Admin..." class="flex-1 border border-slate-300 rounded-xl px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+                <button type="submit" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs transition shadow shrink-0">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-4 rounded-xl shadow-2xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 z-50 border border-slate-700">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toast-msg" class="text-sm font-semibold">Notifikasi</span>
+    </div>
+
+    <script>
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        window.escapeHtml = escapeHtml;
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-msg');
+            const iconEl = document.getElementById('toast-icon');
+            if (!toast || !msgEl) return;
+            msgEl.textContent = msg;
+            if (type === 'success') {
+                iconEl.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+            } else {
+                iconEl.className = "fa-solid fa-triangle-exclamation text-amber-400 text-lg";
+            }
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+        window.showToast = showToast;
+
+        window.scrollToSection = function(sectionId) {
+            const el = document.getElementById(sectionId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        };
+
+        window.openLiveChatModal = function() {
+            document.getElementById('live-chat-modal').classList.remove('hidden');
+        };
+
+        window.closeLiveChatModal = function() {
+            document.getElementById('live-chat-modal').classList.add('hidden');
+        };
+
+        window.handleChatSend = function(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input-msg');
+            const container = document.getElementById('chat-messages-container');
+            const txt = input.value.trim();
+            if (!txt) return;
+
+            container.innerHTML += `
+            <div class="flex items-start gap-2 justify-end">
+                <div class="bg-emerald-700 text-white p-3 rounded-2xl shadow-sm max-w-[80%]">${escapeHtml(txt)}</div>
+                <div class="w-7 h-7 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold shrink-0">U</div>
+            </div>`;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            setTimeout(() => {
+                container.innerHTML += `
+                <div class="flex items-start gap-2">
+                    <div class="w-7 h-7 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold shrink-0">SA</div>
+                    <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm text-slate-800 max-w-[80%]">
+                        Terima kasih pesan Anda telah diterima oleh Super Admin. Kami akan segera merespons melalui WhatsApp atau sistem.
+                    </div>
+                </div>`;
+                container.scrollTop = container.scrollHeight;
+            }, 1000);
+        };
+
+        window.databaseKasus = [];
+        window.penyuluhanList = [];
+        window.beritaList = [];
+        window.kepuasanList = [
+            { id: 1, nama: "Budi Santoso", desa: "Desa Batakan", bintang: 5, saran: "Pelayanan sangat baik dan cepat membantu sengketa.", tanggal: "2026-03-01" },
+            { id: 2, nama: "Siti Aminah", desa: "Kelurahan Angsau", bintang: 4, saran: "Paralegal sangat ramah.", tanggal: "2026-03-05" }
+        ];
+
+        const REGIONAL_DATA = {
+            "Pelaihari": [
+                "Kelurahan Angsau", "Kelurahan Karang Taruna", "Kelurahan Pabahanan", "Kelurahan Pelaihari", "Kelurahan Sarang Halang",
+                "Desa Ambungan", "Desa Atu-Atu", "Desa Benua Lawas", "Desa Panggung", "Desa Kampung Baru", 
+                "Desa Panjaratan", "Desa Pemuda", "Desa Pulai", "Desa Sungai Riam", "Desa Tungkaran", "Desa Kurau"
+            ],
+            "Bati-Bati": [
+                "Desa Bati-Bati", "Desa Banyu Irang", "Desa Bentok Kampung", "Desa Bentok Darat", "Desa Benua Raya", 
+                "Desa Kait-Kait", "Desa Kait-Kait Baru", "Desa Liang Anggang", "Desa Padang", "Desa Ujung Baru", "Desa Ujung Murung"
+            ],
+            "Batu Ampar": [
+                "Desa Ambutun", "Desa Batu Ampar", "Desa Bluru", "Desa Damar Langkap", "Desa Durian Bungkuk", 
+                "Desa Gunung Mas", "Desa Jilatan", "Desa Jilatan Alur", "Desa Pantai Linuh", "Desa Damit", "Desa Tajau Landung"
+            ],
+            "Bumi Makmur": [
+                "Desa Bumi Makmur", "Desa Handil Babirik", "Desa Handil Gayam", "Desa Handil Maluka", 
+                "Desa Kurau Utara", "Desa Labuan Tabu", "Desa Pantai Harapan", "Desa Sungai Rasau"
+            ],
+            "Jorong": [
+                "Desa Alur", "Desa Asam-Asam", "Desa Jorong", "Desa Karang Rejo", 
+                "Desa Muara Asam Asam", "Desa Riam Kanan", "Desa Simpang Empat Jorong", "Desa Batalang", "Desa Swarangan", "Desa Sabuhur"
+            ],
+            "Kintap": [
+                "Desa Asam Jaya", "Desa Bukit Mulia", "Desa Kintap", "Desa Kintap Kecil", "Desa Muara Kintap", 
+                "Desa Riam Adungan", "Desa Suka Damai", "Desa Sumber Jaya", "Desa Pasir Putih", "Desa Pandan Sari", 
+                "Desa Kebun Raya", "Desa Mekar Sari"
+            ],
+            "Kurau": [
+                "Desa Bawah Layung", "Desa Handil Negara", "Desa Kurau", "Desa Maluka Baulin", 
+                "Desa Padang Luas", "Desa Tambak Aluh-Aluh", "Desa Sungai Kedaung", "Desa Kali Besar"
+            ],
+            "Panyipatan": [
+                "Desa Batakan", "Desa Batu Mulya", "Desa Batu Tungku", "Desa Kuring Kitang", 
+                "Desa Panyipatan", "Desa Pegatungan", "Desa Suka Ramah", "Desa Tanjung Dewa"
+            ],
+            "Takisung": [
+                "Desa Benua Tengah", "Desa Batulicin", "Desa Gunung Makmur", 
+                "Desa Kuala Tambangan", "Desa Pagatan Besar", "Desa Ranggang", "Desa Takisung", 
+                "Desa Telaga Langsat", "Desa Tabanio", "Desa Rantau Baru"
+            ],
+            "Tambang Ulang": [
+                "Desa Martadah", "Desa Martadah Baru", "Desa Pulau Salak", "Desa Riam Berasap", 
+                "Desa Sungai Asam", "Desa Tambang Ulang", "Desa Kayu Habang"
+            ],
+            "Bajuin": [
+                "Desa Bajuin", "Desa Galam", "Desa Ketapang", "Desa Kunyi", 
+                "Desa Liang", "Desa Pamalongan", "Desa Sungai Bakar", "Desa Tirta Jaya"
+            ]
+        };
+
+        function getDefaultAuthUsers() {
+            let initial = {
+                'superadmin': { role: 'admin', password: 'admin123', fullname: 'Super Admin Kabupaten', tmpLahir: 'Pelaihari', tglLahir: '1985-05-12', hp: '081111222333', photo: '', label: 'Super Admin', online: true }
+            };
+            for (const kec in REGIONAL_DATA) {
+                REGIONAL_DATA[kec].forEach(itemWilayah => {
+                    let cleanName = itemWilayah.toLowerCase().replace(/desa /g, '').replace(/kelurahan /g, '').trim().replace(/\s+/g, '-');
+                    let username = `paralegal_${cleanName}`;
+                    initial[username] = { 
+                        role: 'paralegal', 
+                        password: 'paralegal123', 
+                        kecamatan: kec, 
+                        desa: itemWilayah, 
+                        fullname: `Paralegal ${itemWilayah}`, 
+                        tmpLahir: kec, 
+                        tglLahir: '1992-08-17', 
+                        hp: '085288990011', 
+                        photo: '',
+                        label: `Paralegal ${itemWilayah}`,
+                        online: false
+                    };
+                });
+            }
+            return initial;
+        }
+
+        window.authUsers = getDefaultAuthUsers();
+        window.currentUserKey = null;
+        window.currentUser = null;
+        window.googleSheetsUrl = localStorage.getItem('si_posbankum_sheets_url') || 'https://script.google.com/macros/s/AKfycbwIqnPb7wUg4CW3j5uppmhhmhDL4th4v2Dy4c9z8HHeHYni3yO2ckKTbb2UxqxHAaAGew/exec';
+
+        window.saveSheetsConfig = function() {
+            const url = document.getElementById('sheets-url-input').value.trim();
+            window.googleSheetsUrl = url;
+            localStorage.setItem('si_posbankum_sheets_url', url);
+            showToast('URL Google Sheets berhasil disimpan!', 'success');
+            fetchAllCloudData();
+        };
+
+        window.sendCloudData = async function(action, payload) {
+            if (!window.googleSheetsUrl) return;
+            try {
+                await fetch(window.googleSheetsUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: action, data: payload })
+                });
+            } catch (err) {
+                console.error("Gagal sinkron ke Cloud Google Sheets:", err);
+            }
+        };
+
+        window.fetchAllCloudData = async function() {
+            if (!window.googleSheetsUrl) {
+                showToast('Masukkan URL Google Sheets terlebih dahulu!', 'warning');
+                return;
+            }
+            try {
+                showToast('Menyinkronkan data dengan Cloud Google Sheets...', 'info');
+                const response = await fetch(window.googleSheetsUrl);
+                const result = await response.json();
+                
+                if (result) {
+                    if (Array.isArray(result.kasus)) window.databaseKasus = result.kasus;
+                    if (Array.isArray(result.penyuluhan)) window.penyuluhanList = result.penyuluhan;
+                    if (Array.isArray(result.berita)) window.beritaList = result.berita;
+                    if (Array.isArray(result.kepuasan)) window.kepuasanList = result.kepuasan;
+                    if (result.users && typeof result.users === 'object' && Object.keys(result.users).length > 0) {
+                        for (const u in result.users) {
+                            if (window.authUsers[u]) {
+                                window.authUsers[u].fullname = result.users[u].fullname || window.authUsers[u].fullname;
+                                window.authUsers[u].tmpLahir = result.users[u].tmpLahir || window.authUsers[u].tmpLahir;
+                                window.authUsers[u].tglLahir = result.users[u].tglLahir || window.authUsers[u].tglLahir;
+                                window.authUsers[u].hp = result.users[u].hp || window.authUsers[u].hp;
+                                window.authUsers[u].photo = result.users[u].photo || window.authUsers[u].photo;
+                                window.authUsers[u].online = result.users[u].online || window.authUsers[u].online;
+                            } else {
+                                window.authUsers[u] = result.users[u];
+                            }
+                        }
+                    }
+                }
+                
+                renderDatabaseTable();
+                renderPenyuluhanList();
+                renderDataParalegalGrid();
+                renderParalegalManagementTable();
+                renderBeritaList();
+                updateDashboardStatsAndCharts();
+                updateOnlineCounterUI();
+                showToast('Data Cloud berhasil disinkronkan!', 'success');
+            } catch (err) {
+                console.error("Error fetching Cloud data:", err);
+                showToast('Sinkronisasi selesai (Mode Offline aktif).', 'success');
+            }
+        };
+
+        window.updateOnlineCounterUI = function() {
+            const badge = document.getElementById('online-counter-badge');
+            if (!badge) return;
+            let count = 0;
+            for (const u in window.authUsers) {
+                if (window.authUsers[u].online) count++;
+            }
+            badge.textContent = `${count} Orang Online`;
+        };
+
+        window.handleLogin = function(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value.trim();
+
+            if (!window.authUsers[username] || window.authUsers[username].password !== password) {
+                showToast('Username atau password salah!', 'warning');
+                return;
+            }
+
+            window.currentUserKey = username;
+            window.currentUser = window.authUsers[username];
+            window.currentUser.online = true;
+            sendCloudData('saveUsers', window.authUsers);
+            proceedLoginSuccess();
+        };
+
+        window.loginAsGuest = function() {
+            window.currentUserKey = 'guest';
+            window.currentUser = { role: 'guest', fullname: 'Masyarakat Tamu / Pimpinan', label: 'Tamu', photo: '', online: true };
+            proceedLoginSuccess();
+        };
+
+        function proceedLoginSuccess() {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('flex');
+
+            updateUIProfileData();
+
+            const sidebarNav = document.getElementById('sidebar-nav-container');
+            const headerBtnTambah = document.getElementById('header-btn-tambah');
+            const appSidebar = document.getElementById('app-sidebar');
+
+            if (window.currentUser.role === 'guest') {
+                if (sidebarNav) {
+                    sidebarNav.style.display = 'flex';
+                    Array.from(sidebarNav.children).forEach(btn => {
+                        const id = btn.id;
+                        if (id !== 'tab-btn-dashboard' && id !== 'tab-btn-data-paralegal' && id !== 'tab-btn-berita' && id !== 'tab-btn-kepuasan') {
+                            btn.style.display = 'none';
+                        } else {
+                            btn.style.display = 'flex';
+                        }
+                    });
+                }
+                if (headerBtnTambah) headerBtnTambah.style.display = 'none';
+                if (appSidebar) appSidebar.style.display = 'flex';
+                switchTab('dashboard');
+            } else if (window.currentUser.role === 'paralegal') {
+                if (sidebarNav) {
+                    sidebarNav.style.display = 'flex';
+                    Array.from(sidebarNav.children).forEach(btn => {
+                        const id = btn.id;
+                        if (id === 'tab-btn-paralegal-management' || id === 'tab-btn-sheets') {
+                            btn.style.display = 'none';
+                        } else {
+                            btn.style.display = 'flex';
+                        }
+                    });
+                }
+                if (headerBtnTambah) headerBtnTambah.style.display = 'flex';
+                if (appSidebar) appSidebar.style.display = 'flex';
+                switchTab('dashboard');
+            } else {
+                if (sidebarNav) {
+                    sidebarNav.style.display = 'flex';
+                    Array.from(sidebarNav.children).forEach(btn => { btn.style.display = 'flex'; });
+                }
+                if (headerBtnTambah) headerBtnTambah.style.display = 'flex';
+                if (appSidebar) appSidebar.style.display = 'flex';
+
+                const adminOnlyMenus = document.querySelectorAll('.admin-only-menu');
+                adminOnlyMenus.forEach(el => el.classList.remove('hidden'));
+                switchTab('dashboard');
+            }
+
+            const petugasInput = document.getElementById('input-petugas-pendamping');
+            if (petugasInput) petugasInput.value = window.currentUser.fullname;
+
+            const paralegalPenyuluhanInput = document.getElementById('penyuluhan-paralegal-nama');
+            if (paralegalPenyuluhanInput) paralegalPenyuluhanInput.value = window.currentUser.fullname;
+
+            setupRegionalDropdowns();
+            renderDatabaseTable();
+            renderPenyuluhanList();
+            renderDataParalegalGrid();
+            renderParalegalManagementTable();
+            renderBeritaList();
+            updateDashboardStatsAndCharts();
+            updateOnlineCounterUI();
+
+            const sInput = document.getElementById('sheets-url-input');
+            if (sInput) sInput.value = window.googleSheetsUrl || '';
+
+            showToast(`Selamat datang, ${window.currentUser.fullname}!`, 'success');
+        }
+
+        window.updateUIProfileData = function() {
+            if (!window.currentUser) return;
+            const user = window.currentUser;
+
+            document.getElementById('profile-name').textContent = user.fullname;
+            document.getElementById('dash-paralegal-name').textContent = user.fullname;
+            document.getElementById('dash-paralegal-wilayah').textContent = user.desa ? `Desa/Kelurahan ${user.desa} (Kec. ${user.kecamatan})` : (user.role === 'guest' ? 'Akses Tamu Kabupaten' : 'Akses Super Admin');
+
+            const headerInit = document.getElementById('header-avatar-initial');
+            const headerImg = document.getElementById('header-avatar-img');
+            const dashImg = document.getElementById('dash-avatar-img');
+            const settingInit = document.getElementById('setting-avatar-initial');
+            const settingImg = document.getElementById('setting-avatar-preview');
+
+            const initials = user.fullname.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+            if (headerInit) headerInit.textContent = initials;
+            if (settingInit) settingInit.textContent = initials;
+
+            if (user.photo) {
+                if (headerImg) { headerImg.src = user.photo; headerImg.classList.remove('hidden'); if(headerInit) headerInit.classList.add('hidden'); }
+                if (dashImg) { dashImg.src = user.photo; dashImg.classList.remove('hidden'); }
+                if (settingImg) { settingImg.src = user.photo; settingImg.classList.remove('hidden'); if(settingInit) settingInit.classList.add('hidden'); }
+            } else {
+                if (headerImg) headerImg.classList.add('hidden');
+                if (headerInit) headerInit.classList.remove('hidden');
+                if (dashImg) dashImg.classList.add('hidden');
+                if (settingImg) settingImg.classList.add('hidden');
+                if (settingInit) settingInit.classList.remove('hidden');
+            }
+
+            const infoUname = document.getElementById('setting-info-username');
+            const infoWilayah = document.getElementById('setting-info-wilayah');
+            const fInput = document.getElementById('setting-input-fullname');
+            const tInput = document.getElementById('setting-input-tmplahir');
+            const dInput = document.getElementById('setting-input-tgllahir');
+            const hInput = document.getElementById('setting-input-hp');
+
+            if (infoUname) infoUname.value = window.currentUserKey || '-';
+            if (infoWilayah) infoWilayah.value = user.desa ? `${user.desa}, Kecamatan ${user.kecamatan}` : (user.role === 'admin' ? 'Super Admin Kabupaten' : 'Tamu Kabupaten');
+            if (fInput) fInput.value = user.fullname || '';
+            if (tInput) tInput.value = user.tmpLahir || '';
+            if (dInput) dInput.value = user.tglLahir || '';
+            if (hInput) hInput.value = user.hp || '';
+        };
+
+        window.handleLogout = function() {
+            if (window.currentUserKey && window.currentUserKey !== 'guest' && window.authUsers[window.currentUserKey]) {
+                window.authUsers[window.currentUserKey].online = false;
+                sendCloudData('saveUsers', window.authUsers);
+            }
+            window.currentUserKey = null;
+            window.currentUser = null;
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('login-page').classList.remove('hidden');
+            updateOnlineCounterUI();
+            showToast('Anda telah keluar dari aplikasi', 'info');
+        };
+
+        window.switchTab = function(tabId) {
+            if ((window.currentUser && window.currentUser.role === 'guest') && tabId !== 'dashboard' && tabId !== 'data-paralegal' && tabId !== 'berita' && tabId !== 'kepuasan') {
+                showToast('Tamu hanya memiliki akses melihat Dashboard, Data Paralegal, Berita, dan Kepuasan Layanan.', 'warning');
+                return;
+            }
+
+            if ((tabId === 'paralegal-management' || tabId === 'sheets') && (!window.currentUser || window.currentUser.role !== 'admin')) {
+                showToast('Akses ditolak! Menu ini khusus Super Admin.', 'warning');
+                return;
+            }
+
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn w-full text-left px-3.5 py-3 rounded-xl text-slate-600 hover:bg-slate-100 transition flex items-center gap-3";
+            });
+
+            const targetContent = document.getElementById(`tab-${tabId}`);
+            const targetBtn = document.getElementById(`tab-btn-${tabId}`);
+            if (targetContent) targetContent.classList.remove('hidden');
+            if (targetBtn) targetBtn.className = "tab-btn w-full text-left px-3.5 py-3 rounded-xl text-slate-700 bg-emerald-50 text-emerald-900 font-bold hover:bg-emerald-100 transition flex items-center gap-3";
+            
+            if (tabId === 'dashboard') {
+                updateDashboardStatsAndCharts();
+            } else if (tabId === 'database') {
+                renderDatabaseTable();
+            } else if (tabId === 'data-paralegal') {
+                renderDataParalegalGrid();
+            } else if (tabId === 'berita') {
+                renderBeritaList();
+            } else if (tabId === 'paralegal-management') {
+                renderParalegalManagementTable();
+            } else if (tabId === 'setting') {
+                updateUIProfileData();
+            }
+        };
+
+        window.setStarRating = function(val) {
+            document.getElementById('kepuasan-bintang').value = val;
+            const labels = {
+                1: "Tidak Puas (1 Bintang)",
+                2: "Kurang Puas (2 Bintang)",
+                3: "Puas (3 Bintang)",
+                4: "Memuaskan (4 Bintang)",
+                5: "Sangat Memuaskan (5 Bintang)"
+            };
+            document.getElementById('star-label-desc').textContent = labels[val];
+            const buttons = document.querySelectorAll('#star-rating-container .star-btn');
+            buttons.forEach((btn, idx) => {
+                if (idx < val) {
+                    btn.className = "star-btn text-3xl text-amber-400 hover:text-amber-500 transition";
+                } else {
+                    btn.className = "star-btn text-3xl text-slate-300 hover:text-amber-400 transition";
+                }
+            });
+        };
+
+        window.handleKepuasanSubmit = function(e) {
+            e.preventDefault();
+            const nama = document.getElementById('kepuasan-nama').value.trim() || "Masyarakat Anonim";
+            const desa = document.getElementById('kepuasan-desa').value.trim() || "Tanah Laut";
+            const bintang = parseInt(document.getElementById('kepuasan-bintang').value) || 5;
+            const saran = document.getElementById('kepuasan-saran').value.trim();
+
+            const newItem = {
+                id: Date.now(),
+                nama,
+                desa,
+                bintang,
+                saran,
+                tanggal: new Date().toISOString().split('T')[0]
+            };
+
+            window.kepuasanList.unshift(newItem);
+            document.getElementById('form-kepuasan').reset();
+            setStarRating(5);
+            updateDashboardStatsAndCharts();
+            sendCloudData('addKepuasan', newItem);
+            showToast('Terima kasih! Penilaian kepuasan layanan berhasil dikirim ke Cloud.', 'success');
+            switchTab('dashboard');
+        };
+
+        window.renderDataParalegalGrid = function() {
+            const container = document.getElementById('directory-grid-container');
+            const searchInput = document.getElementById('directory-search');
+            if (!container) return;
+
+            const filter = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            let html = '';
+
+            for (const uname in window.authUsers) {
+                if (uname === 'superadmin') continue;
+                const user = window.authUsers[uname];
+                const rowText = `${user.desa} ${user.kecamatan} ${user.fullname} ${user.hp}`.toLowerCase();
+                if (filter && !rowText.includes(filter)) continue;
+
+                const initials = user.fullname.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                const photoHtml = user.photo 
+                    ? `<img src="${user.photo}" alt="Foto" class="w-16 h-16 rounded-full object-cover border-2 border-emerald-500 shadow-sm">`
+                    : `<div class="w-16 h-16 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-lg border-2 border-teal-300 shadow-sm">${initials}</div>`;
+
+                const cleanHp = (user.hp || '628111111111').replace(/[^0-9]/g, '');
+                const waNumber = cleanHp.startsWith('0') ? '62' + cleanHp.substring(1) : cleanHp;
+                const waMessage = encodeURIComponent(`Halo ${user.fullname}, saya ingin berkonsultasi mengenai Pos Bantuan Hukum di Desa/Kelurahan ${user.desa}.`);
+
+                html += `
+                <div class="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-4">
+                    <div class="flex items-start gap-4">
+                        ${photoHtml}
+                        <div class="space-y-1 overflow-hidden">
+                            <h4 class="font-bold text-slate-900 text-sm leading-snug truncate">${escapeHtml(user.fullname)}</h4>
+                            <p class="text-xs font-semibold text-emerald-700 truncate"><i class="fa-solid fa-location-dot me-1"></i>${escapeHtml(user.desa)}</p>
+                            <p class="text-[11px] text-slate-500">Kecamatan ${escapeHtml(user.kecamatan)}</p>
+                        </div>
+                    </div>
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-[11px] font-mono text-slate-600"><i class="fa-brands fa-whatsapp text-emerald-600 me-1"></i>${escapeHtml(user.hp || '-')}</span>
+                        <a href="https://wa.me/${waNumber}?text=${waMessage}" target="_blank" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow flex items-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Hubungi WA
+                        </a>
+                    </div>
+                </div>`;
+            }
+            container.innerHTML = html;
+        };
+
+        window.openBeritaModal = function() {
+            document.getElementById('berita-form-modal').classList.remove('hidden');
+        };
+
+        window.closeBeritaModal = function() {
+            document.getElementById('berita-form-modal').classList.add('hidden');
+            document.getElementById('berita-modal-form').reset();
+        };
+
+        window.handleBeritaFormSubmit = function(e) {
+            e.preventDefault();
+            const judul = document.getElementById('berita-modal-judul').value.trim();
+            const isi = document.getElementById('berita-modal-isi').value.trim();
+            const video = document.getElementById('berita-modal-video').value.trim();
+            const fotoInput = document.getElementById('berita-modal-foto');
+
+            const isAdmin = window.currentUser && window.currentUser.role === 'admin';
+            const penulis = window.currentUser ? window.currentUser.fullname : 'Paralegal';
+            const desa = window.currentUser ? (window.currentUser.desa || 'Kabupaten') : 'Kabupaten';
+
+            const newBerita = {
+                id: Date.now(),
+                judul,
+                isi,
+                tanggal: new Date().toISOString().split('T')[0],
+                penulis,
+                desa,
+                verified: isAdmin,
+                foto: '',
+                video
+            };
+
+            const saveBeritaCloud = () => {
+                window.beritaList.unshift(newBerita);
+                closeBeritaModal();
+                renderBeritaList();
+                sendCloudData('addBerita', newBerita);
+                if (isAdmin) {
+                    showToast('Berita berhasil dipublikasikan ke Cloud!', 'success');
+                } else {
+                    showToast('Berita berhasil dikirim ke Cloud dan menunggu verifikasi Super Admin.', 'info');
+                }
+            };
+
+            if (fotoInput && fotoInput.files && fotoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    newBerita.foto = evt.target.result;
+                    saveBeritaCloud();
+                };
+                reader.readAsDataURL(fotoInput.files[0]);
+            } else {
+                saveBeritaCloud();
+            }
+        };
+
+        window.verifyBerita = function(id) {
+            const berita = window.beritaList.find(b => b.id == id);
+            if (berita) {
+                berita.verified = true;
+                renderBeritaList();
+                sendCloudData('updateBerita', berita);
+                showToast('Berita berhasil diverifikasi dan ditampilkan ke publik cloud.', 'success');
+            }
+        };
+
+        window.deleteBerita = function(id) {
+            if (confirm('Apakah Anda ingin menghapus publikasi berita ini?')) {
+                window.beritaList = window.beritaList.filter(b => b.id != id);
+                renderBeritaList();
+                sendCloudData('deleteBerita', { id });
+                showToast('Berita berhasil dihapus dari cloud.', 'success');
+            }
+        };
+
+        window.renderBeritaList = function() {
+            const container = document.getElementById('berita-list-container');
+            if (!container) return;
+
+            let html = '';
+            const isAdmin = window.currentUser && window.currentUser.role === 'admin';
+
+            window.beritaList.forEach(b => {
+                if (!b.verified && !isAdmin && (!window.currentUser || b.penulis !== window.currentUser.fullname)) {
+                    return;
+                }
+
+                let badgeHtml = b.verified 
+                    ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full"><i class="fa-solid fa-check-circle me-1"></i>Terverifikasi Cloud</span>`
+                    : `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full"><i class="fa-solid fa-clock me-1"></i>Menunggu Verifikasi</span>`;
+
+                let imgHtml = b.foto ? `<img src="${b.foto}" alt="Foto Berita" class="w-full h-56 object-cover rounded-2xl mb-4 shadow-sm">` : '';
+                
+                let actionsHtml = '';
+                if (isAdmin) {
+                    actionsHtml += `<div class="flex items-center gap-2 pt-3 border-t border-slate-100">`;
+                    if (!b.verified) {
+                        actionsHtml += `<button type="button" onclick="verifyBerita('${b.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition"><i class="fa-solid fa-check me-1"></i> Verifikasi Berita</button>`;
+                    }
+                    actionsHtml += `<button type="button" onclick="deleteBerita('${b.id}')" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition"><i class="fa-solid fa-trash me-1"></i> Hapus</button>`;
+                    actionsHtml += `</div>`;
+                }
+
+                html += `
+                <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-xs text-slate-500">
+                            <span class="font-bold text-slate-700"><i class="fa-solid fa-user-pen me-1 text-teal-600"></i>${escapeHtml(b.penulis)}</span>
+                            <span>•</span>
+                            <span>${escapeHtml(b.tanggal)}</span>
+                            <span>•</span>
+                            <span class="text-emerald-700 font-semibold">${escapeHtml(b.desa)}</span>
+                        </div>
+                        ${badgeHtml}
+                    </div>
+                    <h3 class="font-extrabold text-slate-900 text-lg">${escapeHtml(b.judul)}</h3>
+                    ${imgHtml}
+                    <p class="text-sm text-slate-600 leading-relaxed whitespace-pre-line">${escapeHtml(b.isi)}</p>
+                    ${actionsHtml}
+                </div>`;
+            });
+
+            container.innerHTML = html || `<p class="text-center text-slate-400 text-xs py-8">Belum ada berita atau kegiatan yang dipublikasikan.</p>`;
+        };
+
+        window.renderParalegalManagementTable = function() {
+            const tbody = document.getElementById('paralegal-mgmt-tbody');
+            const countBadge = document.getElementById('paralegal-count-badge');
+            const searchInput = document.getElementById('paralegal-mgmt-search');
+            if (!tbody) return;
+
+            const filter = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            let html = '';
+            let count = 0;
+
+            for (const uname in window.authUsers) {
+                if (uname === 'superadmin') continue;
+                const user = window.authUsers[uname];
+                const rowText = `${user.desa} ${user.kecamatan} ${user.fullname} ${uname}`.toLowerCase();
+                if (filter && !rowText.includes(filter)) continue;
+
+                count++;
+                html += `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-3.5 font-bold text-slate-800">${escapeHtml(user.desa)}</td>
+                    <td class="p-3.5 text-slate-600">Kec. ${escapeHtml(user.kecamatan)}</td>
+                    <td class="p-3.5 text-emerald-800 font-semibold">${escapeHtml(user.fullname)}</td>
+                    <td class="p-3.5 font-mono text-xs text-slate-700">${escapeHtml(uname)}</td>
+                    <td class="p-3.5 font-mono text-xs text-slate-500">${escapeHtml(user.password)}</td>
+                    <td class="p-3.5 text-center space-x-1">
+                        <button type="button" onclick="openParalegalModal('edit', '${uname}')" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-lg text-[11px] transition shadow-sm" title="Edit Akun"><i class="fa-solid fa-pen"></i></button>
+                        <button type="button" onclick="deleteParalegalAccount('${uname}')" class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-[11px] transition shadow-sm" title="Hapus Akun"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            tbody.innerHTML = html;
+            if (countBadge) countBadge.textContent = count;
+        };
+
+        window.openParalegalModal = function(mode, username = '') {
+            const modal = document.getElementById('paralegal-form-modal');
+            const titleEl = document.getElementById('paralegal-modal-title');
+            const origUnameInput = document.getElementById('modal-original-username');
+            const unameInput = document.getElementById('modal-username');
+            const passInput = document.getElementById('modal-password');
+            const nameInput = document.getElementById('modal-fullname');
+            const kecSelect = document.getElementById('modal-kecamatan');
+            const desaInput = document.getElementById('modal-desa');
+
+            let kecOptions = '<option value="">-- Pilih Kecamatan --</option>';
+            for (const k in REGIONAL_DATA) {
+                kecOptions += `<option value="${k}">${k}</option>`;
+            }
+            kecSelect.innerHTML = kecOptions;
+
+            if (mode === 'add') {
+                titleEl.innerHTML = '<i class="fa-solid fa-user-plus text-emerald-700"></i> Tambah Akun Paralegal Cloud';
+                origUnameInput.value = '';
+                unameInput.value = 'paralegal_';
+                passInput.value = 'paralegal123';
+                nameInput.value = '';
+                kecSelect.value = '';
+                desaInput.value = '';
+            } else if (mode === 'edit') {
+                titleEl.innerHTML = '<i class="fa-solid fa-user-pen text-amber-600"></i> Edit Akun Paralegal Cloud';
+                const user = window.authUsers[username];
+                if (!user) return;
+                origUnameInput.value = username;
+                unameInput.value = username;
+                passInput.value = user.password;
+                nameInput.value = user.fullname;
+                kecSelect.value = user.kecamatan || '';
+                desaInput.value = user.desa || '';
+            }
+            modal.classList.remove('hidden');
+        };
+
+        window.closeParalegalModal = function() {
+            document.getElementById('paralegal-form-modal').classList.add('hidden');
+        };
+
+        window.handleParalegalFormSubmit = function(e) {
+            e.preventDefault();
+            const origUname = document.getElementById('modal-original-username').value.trim();
+            const uname = document.getElementById('modal-username').value.trim().toLowerCase();
+            const password = document.getElementById('modal-password').value.trim();
+            const fullname = document.getElementById('modal-fullname').value.trim();
+            const kecamatan = document.getElementById('modal-kecamatan').value;
+            const desa = document.getElementById('modal-desa').value.trim();
+
+            if (!origUname && window.authUsers[uname]) {
+                showToast('Username tersebut sudah terdaftar di cloud!', 'warning');
+                return;
+            }
+
+            if (origUname && origUname !== uname) {
+                delete window.authUsers[origUname];
+            }
+
+            window.authUsers[uname] = {
+                role: 'paralegal',
+                password: password,
+                kecamatan: kecamatan,
+                desa: desa,
+                fullname: fullname,
+                tmpLahir: kecamatan,
+                tglLahir: '1992-08-17',
+                hp: '085288990011',
+                photo: '',
+                label: fullname,
+                online: false
+            };
+
+            closeParalegalModal();
+            renderParalegalManagementTable();
+            renderDataParalegalGrid();
+            sendCloudData('saveUsers', window.authUsers);
+            showToast('Akun paralegal berhasil disimpan ke cloud Google Sheets!', 'success');
+        };
+
+        window.deleteParalegalAccount = function(username) {
+            if (confirm(`Apakah Anda yakin ingin menghapus akun paralegal cloud (${username})?`)) {
+                delete window.authUsers[username];
+                renderParalegalManagementTable();
+                renderDataParalegalGrid();
+                sendCloudData('saveUsers', window.authUsers);
+                showToast('Akun paralegal berhasil dihapus dari cloud.', 'success');
+            }
+        };
+
+        window.handleProfileUpdate = function(e) {
+            e.preventDefault();
+            if (!window.currentUser || window.currentUserKey === 'guest') {
+                showToast('Mode tamu tidak dapat memperbarui profil.', 'warning');
+                return;
+            }
+
+            const newFullname = document.getElementById('setting-input-fullname').value.trim();
+            const newTmpLahir = document.getElementById('setting-input-tmplahir').value.trim();
+            const newTglLahir = document.getElementById('setting-input-tgllahir').value;
+            const newHp = document.getElementById('setting-input-hp').value.trim();
+            const photoInput = document.getElementById('setting-input-photo');
+
+            window.currentUser.fullname = newFullname;
+            window.currentUser.tmpLahir = newTmpLahir;
+            window.currentUser.tglLahir = newTglLahir;
+            window.currentUser.hp = newHp;
+
+            const saveProfileCloud = () => {
+                if (window.currentUserKey && window.authUsers[window.currentUserKey]) {
+                    window.authUsers[window.currentUserKey].fullname = newFullname;
+                    window.authUsers[window.currentUserKey].tmpLahir = newTmpLahir;
+                    window.authUsers[window.currentUserKey].tglLahir = newTglLahir;
+                    window.authUsers[window.currentUserKey].hp = newHp;
+                    window.authUsers[window.currentUserKey].photo = window.currentUser.photo;
+                }
+
+                updateUIProfileData();
+                renderDataParalegalGrid();
+                const petugasInput = document.getElementById('input-petugas-pendamping');
+                if (petugasInput) petugasInput.value = newFullname;
+                const paralegalPenyuluhanInput = document.getElementById('penyuluhan-paralegal-nama');
+                if (paralegalPenyuluhanInput) paralegalPenyuluhanInput.value = newFullname;
+
+                sendCloudData('saveUsers', window.authUsers);
+                showToast('Profil akun dan foto berhasil disimpan secara cloud permanen!', 'success');
+            };
+
+            if (photoInput && photoInput.files && photoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    window.currentUser.photo = evt.target.result;
+                    saveProfileCloud();
+                };
+                reader.readAsDataURL(photoInput.files[0]);
+            } else {
+                saveProfileCloud();
+            }
+        };
+
+        window.setupRegionalDropdowns = function() {
+            const kecSelect = document.getElementById('input-kecamatan');
+            let kecOptions = '<option value="">-- Pilih Kecamatan --</option>';
+            for (const kec in REGIONAL_DATA) {
+                kecOptions += `<option value="${kec}">${kec}</option>`;
+            }
+            if (kecSelect) kecSelect.innerHTML = kecOptions;
+
+            const penyuluhanKecSelect = document.getElementById('penyuluhan-tempat');
+            if (penyuluhanKecSelect) {
+                let penyuluhanOpts = '<option value="">-- Pilih Kecamatan Lokasi Penyuluhan --</option>';
+                for (const kec in REGIONAL_DATA) {
+                    penyuluhanOpts += `<option value="${kec}">Kecamatan ${kec}</option>`;
+                }
+                penyuluhanKecSelect.innerHTML = penyuluhanOpts;
+            }
+
+            if (window.currentUser && window.currentUser.role === 'paralegal' && window.currentUser.kecamatan) {
+                if (kecSelect) {
+                    kecSelect.value = window.currentUser.kecamatan;
+                    window.onInputKecamatanChange();
+                }
+            }
+        };
+
+        window.onInputKecamatanChange = function() {
+            const kec = document.getElementById('input-kecamatan').value;
+            const desaSelect = document.getElementById('input-desa');
+            if (!desaSelect) return;
+
+            let opts = '<option value="">-- Pilih Desa / Kelurahan --</option>';
+            if (kec && REGIONAL_DATA[kec]) {
+                REGIONAL_DATA[kec].forEach(desa => {
+                    opts += `<option value="${desa}">${desa}</option>`;
+                });
+            }
+            desaSelect.innerHTML = opts;
+
+            if (window.currentUser && window.currentUser.role === 'paralegal' && window.currentUser.desa) {
+                desaSelect.value = window.currentUser.desa;
+            }
+        };
+
+        window.checkJenisKasusLainnya = function(val) {
+            if (val === 'Lainnya') {
+                showToast('Silakan tuliskan jenis kasus spesifik pada kolom Kronologi / Catatan Petugas.', 'info');
+            }
+        };
+
+        let chartJenisKasusInstance = null;
+        let chartMetodeInstance = null;
+        let chartKepuasanInstance = null;
+        let chartPenyuluhanInstance = null;
+        let chartTrenInstance = null;
+
+        window.updateDashboardStatsAndCharts = function() {
+            let activeDataset = window.databaseKasus;
+            if (window.currentUser && window.currentUser.role === 'paralegal' && window.currentUser.desa) {
+                activeDataset = window.databaseKasus.filter(item => {
+                    return item.desa && item.desa.toLowerCase() === window.currentUser.desa.toLowerCase();
+                });
+            }
+
+            const total = activeDataset.length;
+            let konsultasi = 0;
+            let mediasi = 0;
+            let diteruskan = 0;
+            let dihentikan = 0;
+
+            let jenisKasusCount = {};
+            let metodeCount = {
+                'Selesai via Konsultasi': 0,
+                'Selesai via Mediasi': 0,
+                'Selesai via Rujukan': 0,
+                'Selesai Dihentikan': 0
+            };
+
+            activeDataset.forEach(item => {
+                const st = (item.status || "").toLowerCase();
+                if (st.includes('konsultasi')) {
+                    konsultasi++;
+                    if(st.includes('selesai')) metodeCount['Selesai via Konsultasi']++;
+                } else if (st.includes('mediasi')) {
+                    mediasi++;
+                    if(st.includes('selesai')) metodeCount['Selesai via Mediasi']++;
+                } else if (st.includes('rujukan') || st.includes('lbh')) {
+                    diteruskan++;
+                    if(st.includes('selesai')) metodeCount['Selesai via Rujukan']++;
+                } else if (st.includes('dihentikan') || st.includes('arsip')) {
+                    dihentikan++;
+                    metodeCount['Selesai Dihentikan']++;
+                } else {
+                    konsultasi++;
+                }
+
+                const jk = item.jenisKasus || 'Lainnya';
+                jenisKasusCount[jk] = (jenisKasusCount[jk] || 0) + 1;
+            });
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-konsultasi').textContent = konsultasi;
+            document.getElementById('stat-mediasi-2').textContent = mediasi;
+            document.getElementById('stat-diteruskan').textContent = diteruskan;
+            document.getElementById('stat-dihentikan').textContent = dihentikan;
+
+            const directLabelPlugin = {
+                id: 'directLabelPlugin',
+                afterDatasetsDraw(chart, args, options) {
+                    const { ctx, chartArea: { top, bottom, left, right, width, height } } = chart;
+                    chart.data.datasets.forEach((dataset, datasetIndex) => {
+                        const meta = chart.getDatasetMeta(datasetIndex);
+                        const totalSum = dataset.data.reduce((acc, curr) => acc + curr, 0);
+                        meta.data.forEach((element, index) => {
+                            if (dataset.data[index] > 0) {
+                                const val = dataset.data[index];
+                                const percentage = totalSum > 0 ? ((val / totalSum) * 100).toFixed(1) + '%' : '0%';
+                                const text = `${val} (${percentage})`;
+                                
+                                const { x, y } = element.tooltipPosition();
+                                ctx.fillStyle = '#1e293b';
+                                ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                
+                                const textWidth = ctx.measureText(text).width;
+                                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                                ctx.fillRect(x - textWidth / 2 - 4, y - 8, textWidth + 8, 16);
+                                
+                                ctx.fillStyle = '#0f172a';
+                                ctx.fillText(text, x, y);
+                            }
+                        });
+                    });
+                }
+            };
+
+            const ctxKasus = document.getElementById('chartJenisKasus');
+            if (ctxKasus) {
+                if (chartJenisKasusInstance) chartJenisKasusInstance.destroy();
+                chartJenisKasusInstance = new Chart(ctxKasus, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(jenisKasusCount),
+                        datasets: [{
+                            data: Object.values(jenisKasusCount),
+                            backgroundColor: ['#10b981', '#0f4c81', '#f59e0b', '#6366f1', '#ec4899', '#14b8a6', '#8b5cf6', '#64748b']
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const totalSum = context.dataset.data.reduce((acc, current) => acc + current, 0);
+                                        const currentValue = context.raw;
+                                        const percentage = totalSum > 0 ? ((currentValue / totalSum) * 100).toFixed(1) : 0;
+                                        return ` ${context.label}: ${currentValue} kasus (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    plugins: [directLabelPlugin]
+                });
+            }
+
+            const ctxMetode = document.getElementById('chartMetodePenyelesaian');
+            if (ctxMetode) {
+                if (chartMetodeInstance) chartMetodeInstance.destroy();
+                chartMetodeInstance = new Chart(ctxMetode, {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(metodeCount),
+                        datasets: [{
+                            data: Object.values(metodeCount),
+                            backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#64748b']
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const totalSum = context.dataset.data.reduce((acc, current) => acc + current, 0);
+                                        const currentValue = context.raw;
+                                        const percentage = totalSum > 0 ? ((currentValue / totalSum) * 100).toFixed(1) : 0;
+                                        return ` ${context.label}: ${currentValue} kasus (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    plugins: [directLabelPlugin]
+                });
+            }
+
+            let starCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+            window.kepuasanList.forEach(item => {
+                let b = parseInt(item.bintang) || 5;
+                if (starCounts[b] !== undefined) starCounts[b]++;
+            });
+
+            const ctxKepuasan = document.getElementById('chartKepuasanLayanan');
+            if (ctxKepuasan) {
+                if (chartKepuasanInstance) chartKepuasanInstance.destroy();
+                chartKepuasanInstance = new Chart(ctxKepuasan, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Tidak Puas (1⭐)', 'Kurang Puas (2⭐)', 'Puas (3⭐)', 'Memuaskan (4⭐)', 'Sangat Memuaskan (5⭐)'],
+                        datasets: [{
+                            label: 'Jumlah Penilaian',
+                            data: [starCounts[1], starCounts[2], starCounts[3], starCounts[4], starCounts[5]],
+                            backgroundColor: '#f59e0b'
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            let penyuluhanKecCount = {};
+            Object.keys(REGIONAL_DATA).forEach(kec => { penyuluhanKecCount[kec] = 0; });
+            window.penyuluhanList.forEach(p => {
+                const t = p.tempat || '';
+                if (penyuluhanKecCount[t] !== undefined) {
+                    penyuluhanKecCount[t]++;
+                }
+            });
+
+            const ctxPenyuluhan = document.getElementById('chartPenyuluhanKecamatan');
+            if (ctxPenyuluhan) {
+                if (chartPenyuluhanInstance) chartPenyuluhanInstance.destroy();
+                chartPenyuluhanInstance = new Chart(ctxPenyuluhan, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(penyuluhanKecCount),
+                        datasets: [{
+                            label: 'Jumlah Kegiatan Penyuluhan',
+                            data: Object.values(penyuluhanKecCount),
+                            backgroundColor: '#0f766e'
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            const ctxTren = document.getElementById('chartTrenKasus');
+            if (ctxTren) {
+                if (chartTrenInstance) chartTrenInstance.destroy();
+                chartTrenInstance = new Chart(ctxTren, {
+                    type: 'bar',
+                    data: {
+                        labels: ['2024', '2025', '2026 (Berjalan)'],
+                        datasets: [{
+                            label: 'Total Kasus Masuk',
+                            data: [266, 283, total],
+                            backgroundColor: ['#cbd5e1', '#94a3b8', '#f59e0b']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+        };
+
+        window.updateCaseStatusInline = function(noReg, newStatus) {
+            const item = window.databaseKasus.find(k => k.noReg === noReg);
+            if (item) {
+                item.status = newStatus;
+                updateDashboardStatsAndCharts();
+                sendCloudData('updateKasusStatus', { noReg, status: newStatus });
+                showToast(`Status kasus ${noReg} diperbarui menjadi: ${newStatus}`, 'success');
+            }
+        };
+
+        window.renderDatabaseTable = function() {
+            const tbody = document.getElementById('database-table-body');
+            const countEl = document.getElementById('count-filtered');
+            const scopeBadge = document.getElementById('database-scope-badge');
+            if (!tbody) return;
+
+            let filtered = window.databaseKasus;
+
+            if (window.currentUser && window.currentUser.role === 'paralegal' && window.currentUser.desa) {
+                filtered = window.databaseKasus.filter(item => {
+                    return item.desa && item.desa.toLowerCase() === window.currentUser.desa.toLowerCase();
+                });
+                if (scopeBadge) {
+                    scopeBadge.textContent = `Wilayah: ${window.currentUser.desa}`;
+                    scopeBadge.style.display = 'inline-block';
+                }
+            } else {
+                if (scopeBadge) {
+                    scopeBadge.textContent = 'Akses Kabupaten (Semua Desa)';
+                    scopeBadge.style.display = 'inline-block';
+                }
+            }
+
+            const searchInput = document.getElementById('filter-search');
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            if (query) {
+                filtered = filtered.filter(item => {
+                    return (item.namaPelapor && item.namaPelapor.toLowerCase().includes(query)) ||
+                           (item.nik && item.nik.includes(query)) ||
+                           (item.noReg && item.noReg.toLowerCase().includes(query)) ||
+                           (item.desa && item.desa.toLowerCase().includes(query));
+                });
+            }
+
+            if (countEl) countEl.textContent = filtered.length;
+
+            let html = '';
+            filtered.forEach(item => {
+                const currentStatus = item.status || 'Tahap Konsultasi';
+                html += `
+                <tr class="hover:bg-slate-50 border-b border-slate-100 transition">
+                    <td class="p-3.5 font-mono font-bold text-emerald-800 text-xs">${escapeHtml(item.noReg)}</td>
+                    <td class="p-3.5 text-xs">${escapeHtml(item.tanggal)}</td>
+                    <td class="p-3.5 font-bold text-slate-800 text-xs">${escapeHtml(item.namaPelapor)} <br><span class="font-mono text-[10px] text-slate-400 font-normal">NIK: ${escapeHtml(item.nik || '-')}</span></td>
+                    <td class="p-3.5 text-xs text-slate-600">${escapeHtml(item.desa)}<br><span class="text-[10px] text-slate-400">Kec. ${escapeHtml(item.kecamatan)}</span></td>
+                    <td class="p-3.5 text-xs text-slate-700">${escapeHtml(item.jenisKasus)}</td>
+                    <td class="p-3.5">
+                        <select onchange="updateCaseStatusInline('${item.noReg}', this.value)" class="border border-slate-300 rounded-lg p-1.5 text-xs font-bold bg-white outline-none focus:ring-2 focus:ring-emerald-500 text-emerald-900">
+                            <option value="Tahap Konsultasi" ${currentStatus === 'Tahap Konsultasi' ? 'selected' : ''}>Tahap Konsultasi</option>
+                            <option value="Tahap Mediasi" ${currentStatus === 'Tahap Mediasi' ? 'selected' : ''}>Tahap Mediasi</option>
+                            <option value="Tahap Rujukan" ${currentStatus === 'Tahap Rujukan' ? 'selected' : ''}>Tahap Rujukan</option>
+                            <option value="Selesai via Konsultasi" ${currentStatus === 'Selesai via Konsultasi' ? 'selected' : ''}>Selesai via Konsultasi</option>
+                            <option value="Selesai via Mediasi" ${currentStatus === 'Selesai via Mediasi' ? 'selected' : ''}>Selesai via Mediasi</option>
+                            <option value="Selesai via Rujukan" ${currentStatus === 'Selesai via Rujukan' ? 'selected' : ''}>Selesai via Rujukan</option>
+                            <option value="Selesai Dihentikan" ${currentStatus === 'Selesai Dihentikan' ? 'selected' : ''}>Selesai Dihentikan</option>
+                        </select>
+                    </td>
+                    <td class="p-3.5 text-center">
+                        <span class="text-xs text-slate-500 font-medium">${escapeHtml(item.petugas)}</span>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        };
+
+        window.renderPenyuluhanList = function() {
+            const container = document.getElementById('penyuluhan-list-container');
+            if (!container) return;
+            let html = '';
+            window.penyuluhanList.forEach(p => {
+                html += `
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[10px] bg-teal-50 text-teal-800 font-bold px-2 py-0.5 rounded border border-teal-200">${escapeHtml(p.tanggal)}</span>
+                        <h4 class="font-bold text-slate-800 text-sm mt-1">${escapeHtml(p.nama)}</h4>
+                        <p class="text-xs text-slate-600 mt-0.5"><i class="fa-solid fa-location-dot me-1 text-teal-600"></i> Kecamatan ${escapeHtml(p.tempat)}</p>
+                        <p class="text-xs text-slate-700 mt-0.5"><i class="fa-solid fa-microphone me-1 text-teal-600"></i> Narasumber: <strong class="text-slate-900">${escapeHtml(p.narasumber || '-')}</strong></p>
+                    </div>
+                    <span class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-xl font-bold self-start sm:self-center">${escapeHtml(p.paralegal)}</span>
+                </div>`;
+            });
+            container.innerHTML = html;
+        };
+
+        window.handlePenyuluhanSubmit = function(e) {
+            e.preventDefault();
+            const tanggal = document.getElementById('penyuluhan-tgl').value;
+            const nama = document.getElementById('penyuluhan-nama').value.trim();
+            const tempat = document.getElementById('penyuluhan-tempat').value;
+            const narasumber = document.getElementById('penyuluhan-narasumber').value.trim();
+            const paralegal = window.currentUser ? window.currentUser.fullname : 'Paralegal Desa';
+
+            const newPenyuluhan = { id: Date.now(), tanggal, nama, tempat, narasumber, paralegal };
+            window.penyuluhanList.unshift(newPenyuluhan);
+            document.getElementById('form-penyuluhan').reset();
+            const paralegalPenyuluhanInput = document.getElementById('penyuluhan-paralegal-nama');
+            if (paralegalPenyuluhanInput && window.currentUser) {
+                paralegalPenyuluhanInput.value = window.currentUser.fullname;
+            }
+            window.renderPenyuluhanList();
+            updateDashboardStatsAndCharts();
+            sendCloudData('addPenyuluhan', newPenyuluhan);
+            showToast('Kegiatan penyuluhan hukum berhasil disimpan ke cloud!', 'success');
+        };
+
+        window.handleFormSubmit = function(e) {
+            e.preventDefault();
+            const noReg = "PBK-DPMD/09/" + String(window.databaseKasus.length + 1).padStart(3, '0');
+            const newItem = {
+                noReg,
+                tanggal: document.getElementById('input-tgl-pelaporan').value || new Date().toISOString().split('T')[0],
+                namaPelapor: document.getElementById('input-nama').value.trim(),
+                nik: document.getElementById('input-nik').value.trim(),
+                kecamatan: document.getElementById('input-kecamatan').value,
+                desa: document.getElementById('input-desa').value,
+                jenisKasus: document.getElementById('input-jenis-kasus').value,
+                status: document.getElementById('input-status-penanganan').value || 'Tahap Konsultasi',
+                petugas: document.getElementById('input-petugas-pendamping').value || (window.currentUser ? window.currentUser.fullname : 'Petugas Posbankum')
+            };
+            window.databaseKasus.unshift(newItem);
+            document.getElementById('form-kasus').reset();
+            
+            const petugasInput = document.getElementById('input-petugas-pendamping');
+            if (petugasInput && window.currentUser) petugasInput.value = window.currentUser.fullname;
+
+            window.renderDatabaseTable();
+            window.updateDashboardStatsAndCharts();
+            sendCloudData('addKasus', newItem);
+            showToast('Data kasus berhasil disimpan dan dikirim ke Cloud Google Sheets!', 'success');
+            window.switchTab('dashboard');
+        };
+
+        window.onload = function() {
+            fetchAllCloudData();
+            setStarRating(5);
+        };
+    </script>
+</body>
+</html>
